@@ -1,5 +1,5 @@
 # Use the official Golang image as a base image
-FROM golang:1.17-alpine AS build
+FROM golang:1.22.1-alpine AS build
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -14,13 +14,13 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o /out ./cmd
+RUN go build -o /app/out ./cmd
 
 # Start a new stage from scratch
 FROM alpine:latest
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=build /out /app/out
+COPY --from=build /app/out /app/out
 
 # Command to run the executable
 CMD ["/app/out"]
