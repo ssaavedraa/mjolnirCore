@@ -12,10 +12,15 @@ import (
 
 func main() {
 	env := os.Getenv("ENVIRONMENT")
+	log.Println(env)
 	if env == "development" {
 		if error := godotenv.Load(); error != nil {
 			log.Fatalf("Error loading .env file: %v", error)
 		}
+	}
+
+	if env == "production" {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
 	router := gin.Default()
