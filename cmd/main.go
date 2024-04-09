@@ -4,7 +4,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"santiagosaavedra.com.co/invoices/internal/api"
@@ -23,7 +25,18 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	frontendUrl := os.Getenv("FRONTEND_URL")
+	log.Println(frontendUrl)
+
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+    AllowOrigins:     []string{frontendUrl},
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+    AllowHeaders:     []string{"Origin", "Content-Type"},
+    AllowCredentials: true,
+    MaxAge:           12 * time.Hour,
+}))
 
 	api.SetupRoutes(router)
 
