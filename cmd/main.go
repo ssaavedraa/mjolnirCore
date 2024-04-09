@@ -26,7 +26,6 @@ func main() {
 	}
 
 	frontendUrl := os.Getenv("FRONTEND_URL")
-	log.Println(frontendUrl)
 
 	router := gin.Default()
 
