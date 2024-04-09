@@ -4,17 +4,14 @@ FROM golang:1.22.1-alpine AS build
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Copy the entire project directory into the container
+COPY . .
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod download
-
-# Copy the source code from the /cmd directory into the container's /app directory
-COPY ./cmd /app
+# Set the Current Working Directory to the cmd directory
+WORKDIR /app/cmd
 
 # Build the Go app
-RUN go build -o /app/out ./cmd
+RUN go build -o /app/out .
 
 # Start a new stage from scratch
 FROM alpine:latest
