@@ -46,8 +46,8 @@ func (service *Service) SendEmail(to, subject, body string, file multipart.File)
 
 	attachment := []byte(
 		"--" + boundary + "\r\n" +
-		"Content-Type: application/pdf\r\n" +
-		"Content-Disposition: attachment; filename: \"invoice.pdf\"\r\n" +
+		"Content-Type: application/pdf; name=\"invoice.pdf\"\r\n" +
+		"Content-Disposition: attachment; filename=\"invoice.pdf\"\r\n" +
 		"Content-Transfer-Encoding: base64\r\n" +
 		"\r\n" +
 		encodedContent + "\r\n" +
