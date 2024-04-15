@@ -11,5 +11,7 @@ type User struct {
 	PhoneNumber string
 	Address string
 
-	Companies []Company
+	Companies []Company `gorm:"foreignKey:UserID"`
+	Shifts []Shift `gorm:"foreignKey:UserID"`
+	Invoices []Invoice `gorm:"foreignKey:UserID"`
 }

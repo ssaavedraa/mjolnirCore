@@ -9,5 +9,5 @@ type Company struct {
 	Address string
 	Abn string
 	PhoneNumber string
-	UserId uint
+	UserID uint
 }

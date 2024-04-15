@@ -10,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"santiagosaavedra.com.co/invoices/internal/api"
+	"santiagosaavedra.com.co/invoices/internal/db"
+	"santiagosaavedra.com.co/invoices/internal/model"
 )
 
 func main() {
@@ -26,6 +28,14 @@ func main() {
 	}
 
 	frontendUrl := os.Getenv("FRONTEND_URL")
+
+	db, error := db.GetInstance()
+
+	if error != nil {
+		log.Fatalf("Database connection failed: %v", error)
+	}
+
+	db.AutoMigrate(&model.User{}, &model.Company{}, &model.Invoice{}, &model.Shift{})
 
 	router := gin.Default()
 
