@@ -50,3 +50,7 @@ func SendEmailHandler (context *gin.Context) {
 
 	context.IndentedJSON(http.StatusCreated, gin.H{"message" : "Email sent successfully"})
 }
+
+func ClockInHandler (context *gin.Context) {
+	context.IndentedJSON(http.StatusOK, gin.H{"message": "clocked in!"})
+}
