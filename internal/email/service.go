@@ -17,14 +17,14 @@ func NewService(factory SMTPClientFactory) *Service {
 	return &Service{smtpFactory: factory}
 }
 
-func (service *Service) SendEmail(to, subject, body string, file multipart.File) error {
+func (service *Service) SendEmail(to, cc, subject, body string, file multipart.File) error {
 	senderEmail := os.Getenv("ICLOUD_SENDER_EMAIL")
 
 
 	boundary := "boundary-123456789"
 	message := []byte(
 		"From: " + senderEmail + "\r\n" +
-		"To: " + to + "\r\n" +
+		"To: " + to + ", " + cc + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"MIME-Version: 1.0\r\n" +
 		"Content-Type: multipart/mixed; boundary=" + boundary + "\r\n\r\n" +
@@ -61,7 +61,7 @@ func (service *Service) SendEmail(to, subject, body string, file multipart.File)
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
 
-	error := smtp.SendMail(smtpHost + ":" + smtpPort, auth, senderEmail, []string{to}, []byte(message))
+	error := smtp.SendMail(smtpHost + ":" + smtpPort, auth, senderEmail, []string{to, cc}, []byte(message))
 
 	if error != nil {
 		log.Printf("Failed to send email: %v", error)

@@ -11,6 +11,7 @@ import (
 
 type Email struct {
 	To string `form:"to" binding:"required"`
+	Cc string `form:"cc" binding:"required"`
 	Subject string `form:"subject" binding:"required"`
 	Body string `form:"body" binding:"required"`
 	File *multipart.FileHeader `form:"file" binding:"required"`
@@ -40,7 +41,7 @@ func SendEmailHandler (context *gin.Context) {
 	factory := email.GetSMTPClientFactory()
 	service := email.NewService(factory)
 
-	error := service.SendEmail(newEmail.To, newEmail.Subject, newEmail.Body, file)
+	error := service.SendEmail(newEmail.To, newEmail.Cc, newEmail.Subject, newEmail.Body, file)
 
 	if error != nil {
 		context.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Failed to send email"})
