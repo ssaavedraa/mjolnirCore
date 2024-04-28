@@ -29,7 +29,7 @@ func ClockIn(c *gin.Context) {
 	var userShift model.Shift
 	if err := database.Where("user_id = ? AND to_char(clock_in, 'YYYY-MM-DD') = ?", user.(model.User).ID, currentDate).First(&userShift).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			database.Create(&userShift)
+			database.Create(&model.Shift{UserID: user.(model.User).ID})
 
 			c.IndentedJSON(http.StatusCreated, gin.H{"message": "Welcome back!"})
 			return
@@ -68,7 +68,7 @@ func ClockOut(c *gin.Context) {
 		}
 
 		log.Printf("Error retrieving shift: %v", err)
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"megin jwt authssage": "Error retrieving shift"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Error retrieving shift"})
 		return
 	}
 
@@ -79,4 +79,22 @@ func ClockOut(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "See you next time!"})
+}
+
+func GetAll(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	db, err := db.GetInstance()
+
+	if err != nil {
+		log.Printf("Database unavailable: %v", err)
+
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Database unavailable"})
+		return
+	}
+
+	var shifts []model.Shift
+	db.Where("user_id = ?", user.(model.User).ID).Find(&shifts)
+
+	c.JSON(http.StatusOK, shifts)
 }

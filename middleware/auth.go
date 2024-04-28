@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 	"santiagosaavedra.com.co/invoices/internal/db"
 	"santiagosaavedra.com.co/invoices/internal/model"
 )
@@ -35,6 +37,7 @@ func Auth (c *gin.Context) {
 	if err != nil {
 		log.Printf("Token parsing error: %v", err)
 
+		c.SetCookie("session", "", -1, "", "", false, true)
 		c.AbortWithStatus(http.StatusUnauthorized)
 
 		return
@@ -43,6 +46,7 @@ func Auth (c *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// Check token expiration
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			c.SetCookie("session", "", -1, "", "", false, true)
 			c.AbortWithStatus(http.StatusUnauthorized)
 
 			return
@@ -55,24 +59,36 @@ func Auth (c *gin.Context) {
 		if dbErr != nil {
 			log.Printf("Database unavailable: %v", err)
 
+			c.SetCookie("session", "", -1, "", "", false, true)
 			c.AbortWithStatus(http.StatusInternalServerError)
 
 			return
 		}
 
-		if err := database.First(&user, claims["sub"]).Error; err != nil {
-			log.Printf("Failed to authenticate: %v", err)
+		if err := database.Select("fullname", "email", "abn", "address", "phone_number", "id").First(&user, claims["sub"]).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				log.Printf("Failed to authenticate: %v", err)
 
+			c.SetCookie("session", "", -1, "", "", false, true)
 			c.AbortWithStatus(http.StatusUnauthorized)
+
+				return
+			}
+
+			log.Printf("Database query failed: %v", err)
+
+			c.SetCookie("session", "", -1, "", "", false, true)
+			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 
-		c.Set("user", &user)
+		c.Set("user", user)
 
 		c.Next()
 	} else {
 		log.Printf("Authentication error: %v", err)
 
-		c.AbortWithStatus(http.StatusUnauthorized)
+			c.SetCookie("session", "", -1, "", "", false, true)
+			c.AbortWithStatus(http.StatusUnauthorized)
 
 		return
 	}

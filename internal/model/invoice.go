@@ -7,4 +7,6 @@ type Invoice struct {
 	FileName string
 	FileUrl string
 	UserID uint
+
+	InvoiceItems []InvoiceItem 	`gorm:"foreignKey:InvoiceID"`
 }

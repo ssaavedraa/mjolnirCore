@@ -19,6 +19,10 @@ func SignUp (c *gin.Context) {
 	var body struct {
 		Email string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
+		Fullname string `json:"fullname" binding:"required"`
+		Abn string `json:"abn" binding:"required"`
+		PhoneNumber string `json:"phoneNumber" binding:"required"`
+		Address string `json:"address" binding:"required"`
 	}
 
 	if err := c.Bind(&body); err != nil {
@@ -45,6 +49,10 @@ func SignUp (c *gin.Context) {
 	user := model.User{
 		Email: body.Email,
 		Password: string(hash),
+		Fullname: body.Fullname,
+		Abn: body.Abn,
+		PhoneNumber: body.PhoneNumber,
+		Address: body.Address,
 	}
 
 	database, err := db.GetInstance()
@@ -68,6 +76,11 @@ func SignUp (c *gin.Context) {
 
 		return
 	}
+
+	signedToken, err := getToken(&user)
+
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("session", signedToken, 3600 * 24 * 7, "", "", false, true)
 
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Welcome!"})
 }
@@ -127,6 +140,34 @@ func LogIn (c *gin.Context) {
 		return
 	}
 
+	signedToken, tokenErr := getToken(&user)
+
+	if tokenErr != nil {
+		c.AbortWithStatus(500)
+	}
+
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("session", signedToken, 3600 * 24 * 7, "", "", false, true)
+
+	c.IndentedJSON(http.StatusCreated, gin.H{})
+}
+
+func LogOut (c *gin.Context) {
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("session", "", -1, "", "", false, true)
+
+	c.IndentedJSON(http.StatusCreated, gin.H{})
+}
+
+func GetUserDetails (c *gin.Context) {
+	user, _ := c.Get("user")
+
+	log.Println(user)
+
+	c.IndentedJSON(http.StatusOK, user)
+}
+
+func getToken (user *model.User) (signedToken string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
@@ -139,15 +180,8 @@ func LogIn (c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to create token: %v", err)
 
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to create token",
-		})
-
-		return
+		return "", err
 	}
 
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("session", tokenString, 3600 * 24 * 7, "", "", false, true)
-
-	c.IndentedJSON(http.StatusCreated, gin.H{})
+	return tokenString, nil
 }

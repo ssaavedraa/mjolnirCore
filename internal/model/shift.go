@@ -9,6 +9,6 @@ import (
 type Shift struct {
 	gorm.Model
 	ClockIn time.Time `gorm:"default:current_timestamp"`
-	ClockOut time.Time `gorm:"default:null"`
+	ClockOut *time.Time `gorm:"default:null"`
 	UserID uint `json:"userId"`
 }

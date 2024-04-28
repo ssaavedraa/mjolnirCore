@@ -35,7 +35,13 @@ func main() {
 		log.Fatalf("Database connection failed: %v", error)
 	}
 
-	db.AutoMigrate(&model.User{}, &model.Company{}, &model.Invoice{}, &model.Shift{})
+	db.AutoMigrate(
+		&model.User{},
+		&model.Company{},
+		&model.Invoice{},
+		&model.Shift{},
+		&model.InvoiceItem{},
+	)
 
 	router := gin.Default()
 
@@ -45,7 +51,7 @@ func main() {
     AllowHeaders:     []string{"Origin", "Content-Type"},
     AllowCredentials: true,
     MaxAge:           12 * time.Hour,
-}))
+	}))
 
 	api.SetupRoutes(router)
 
