@@ -79,6 +79,14 @@ func SignUp (c *gin.Context) {
 
 	signedToken, err := getToken(&user)
 
+	if err != nil {
+		log.Printf("Failed to sign token: %v", err)
+
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to sign token",
+		})
+	}
+
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("session", signedToken, 3600 * 24 * 7, "", "", false, true)
 
