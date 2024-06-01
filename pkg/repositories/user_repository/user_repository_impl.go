@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"santiagosaavedra.com.co/invoices/pkg/config"
-	"santiagosaavedra.com.co/invoices/pkg/models"
+	"hex/cms/pkg/config"
+	"hex/cms/pkg/models"
 )
 
 func CreateUser (user models.User) (models.User, error) {

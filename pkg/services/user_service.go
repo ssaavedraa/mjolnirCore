@@ -1,9 +1,10 @@
 package services
 
 import (
+	"hex/cms/pkg/models"
+	"hex/cms/pkg/repositories"
+
 	"golang.org/x/crypto/bcrypt"
-	"santiagosaavedra.com.co/invoices/pkg/models"
-	"santiagosaavedra.com.co/invoices/pkg/repositories"
 )
 
 type UserInput struct {

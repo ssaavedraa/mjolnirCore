@@ -3,8 +3,8 @@ package shiftService
 import (
 	"time"
 
-	"santiagosaavedra.com.co/invoices/internal/db"
-	"santiagosaavedra.com.co/invoices/internal/model"
+	"hex/cms/internal/db"
+	"hex/cms/internal/model"
 )
 
 func GetShiftsInRage(lowerLimit, upperLimit, userId int) ([]model.Shift, error) {

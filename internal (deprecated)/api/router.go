@@ -1,9 +1,10 @@
 package api
 
 import (
+	"hex/cms/internal/controller"
+	"hex/cms/internal/middleware"
+
 	"github.com/gin-gonic/gin"
-	"santiagosaavedra.com.co/invoices/internal/controller"
-	"santiagosaavedra.com.co/invoices/internal/middleware"
 )
 
 func SetupRoutes(router *gin.Engine) {

@@ -4,9 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	"hex/cms/pkg/services"
+	"hex/cms/pkg/utils"
+
 	"github.com/gin-gonic/gin"
-	"santiagosaavedra.com.co/invoices/pkg/services"
-	"santiagosaavedra.com.co/invoices/pkg/utils"
 )
 
 type UserResponse struct {

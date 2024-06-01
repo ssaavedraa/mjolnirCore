@@ -5,8 +5,9 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	"hex/cms/internal/email"
+
 	"github.com/gin-gonic/gin"
-	"santiagosaavedra.com.co/invoices/internal/email"
 )
 
 type Email struct {

@@ -7,12 +7,13 @@ import (
 	"os"
 	"time"
 
+	"hex/cms/internal/db"
+	"hex/cms/internal/model"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"santiagosaavedra.com.co/invoices/internal/db"
-	"santiagosaavedra.com.co/invoices/internal/model"
 )
 
 func SignUp (c *gin.Context) {

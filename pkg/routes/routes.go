@@ -4,10 +4,11 @@ import (
 	"log"
 	"time"
 
+	"hex/cms/pkg/config"
+	"hex/cms/pkg/controllers"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"santiagosaavedra.com.co/invoices/pkg/config"
-	"santiagosaavedra.com.co/invoices/pkg/controllers"
 )
 
 func SetupRouter () *gin.Engine {

@@ -5,10 +5,11 @@ import (
 	"log"
 	"os"
 
+	"hex/cms/pkg/models"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"santiagosaavedra.com.co/invoices/pkg/models"
 )
 
 var DB *gorm.DB

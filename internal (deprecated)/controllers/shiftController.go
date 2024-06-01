@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
+	"hex/cms/internal/db"
+	"hex/cms/internal/model"
+	shiftService "hex/cms/internal/service"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"santiagosaavedra.com.co/invoices/internal/db"
-	"santiagosaavedra.com.co/invoices/internal/model"
-	shiftService "santiagosaavedra.com.co/invoices/internal/service"
 )
 
 func ClockIn(c *gin.Context) {

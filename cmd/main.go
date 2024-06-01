@@ -3,10 +3,11 @@ package main
 import (
 	"log"
 
+	"hex/cms/pkg/config"
+	"hex/cms/pkg/routes"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"santiagosaavedra.com.co/invoices/pkg/config"
-	"santiagosaavedra.com.co/invoices/pkg/routes"
 )
 
 func main() {

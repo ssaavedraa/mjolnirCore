@@ -1,4 +1,4 @@
-module santiagosaavedra.com.co/invoices
+module hex/cms
 
 go 1.22.1
 
