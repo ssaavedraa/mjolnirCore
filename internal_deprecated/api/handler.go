@@ -5,7 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"hex/cms/internal/email"
+	"hex/cms/internal_deprecated/email"
 
 	"github.com/gin-gonic/gin"
 )

@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"hex/cms/internal/db"
-	"hex/cms/internal/model"
-	shiftService "hex/cms/internal/service"
+	"hex/cms/internal_deprecated/db"
+	"hex/cms/internal_deprecated/model"
+	shiftService "hex/cms/internal_deprecated/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

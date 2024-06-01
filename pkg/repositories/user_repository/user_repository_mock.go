@@ -1,15 +1,16 @@
 package repositories
 
-import "hex/cms/pkg/models"
+import (
+	"hex/cms/pkg/models"
+
+	"github.com/stretchr/testify/mock"
+)
 
 type MockUserRepository struct {
-	CreateUserFunc func(user models.User) (models.User, error)
+	mock.Mock
 }
 
 func (m *MockUserRepository) CreateUser (user models.User) (models.User, error) {
-	if (m.CreateUserFunc != nil) {
-		return m.CreateUserFunc(user)
-	}
-
-	return models.User{}, nil
+	args := m.Called(user)
+	return args.Get(0).(models.User), args.Error(1)
 }

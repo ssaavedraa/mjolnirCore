@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"hex/cms/internal/db"
-	"hex/cms/internal/model"
+	"hex/cms/internal_deprecated/db"
+	"hex/cms/internal_deprecated/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

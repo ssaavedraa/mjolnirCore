@@ -1,8 +1,8 @@
 package api
 
 import (
-	"hex/cms/internal/controller"
-	"hex/cms/internal/middleware"
+	"hex/cms/internal_deprecated/controller"
+	"hex/cms/internal_deprecated/middleware"
 
 	"github.com/gin-gonic/gin"
 )
