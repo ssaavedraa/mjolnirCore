@@ -7,6 +7,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UserServiceImpl struct {
+	UserRepository repositories.UserRepository
+}
+
 type UserInput struct {
 	Email string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
@@ -15,7 +19,13 @@ type UserInput struct {
 	Address string `json:"address" binding:"required"`
 }
 
-func CreateUser (input UserInput) (models.User, error) {
+func NewUserService (userRepository repositories.UserRepository) *UserServiceImpl {
+	return &UserServiceImpl{
+		UserRepository: userRepository,
+	}
+}
+
+func (us *UserServiceImpl) CreateUser (input UserInput) (models.User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 
 	if err != nil {
@@ -30,7 +40,7 @@ func CreateUser (input UserInput) (models.User, error) {
 		Address: input.Address,
 	}
 
-	createdUser, err := repositories.CreateUser(user)
+	createdUser, err := us.UserRepository.CreateUser(user)
 
 	if err != nil {
 		return models.User{}, err

@@ -1,11 +1,12 @@
 package routes
 
 import (
-	"log"
 	"time"
 
 	"hex/cms/pkg/config"
-	"hex/cms/pkg/controllers"
+	controllers "hex/cms/pkg/controllers/user_controller"
+	repositories "hex/cms/pkg/repositories/user_repository"
+	services "hex/cms/pkg/services/user_service"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -14,23 +15,24 @@ import (
 func SetupRouter () *gin.Engine {
 	r := gin.Default()
 
-	domain := config.GetEnv("DOMAIN")
-	log.Printf("domain: %v", domain)
-
 	r.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{domain},
+    AllowOrigins:     []string{config.GetEnv("DOMAIN")},
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
     AllowHeaders:     []string{"Origin", "Content-Type"},
     AllowCredentials: true,
     MaxAge:           12 * time.Hour,
 	}))
 
+	userRepository := repositories.NewUserRepository()
+	userService := services.NewUserService(userRepository)
+	userController := controllers.NewUserController(userService)
+
 	api := r.Group("/api")
 
 	userApi := api.Group("/users")
 
 	{
-		userApi.POST("/signup", controllers.CreateUser)
+		userApi.POST("/signup", userController.CreateUser)
 	}
 
 	return r

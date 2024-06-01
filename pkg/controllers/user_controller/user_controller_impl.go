@@ -4,18 +4,28 @@ import (
 	"log"
 	"net/http"
 
-	"hex/cms/pkg/services"
+	services "hex/cms/pkg/services/user_service"
 	"hex/cms/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
+
+type UserControllerImpl struct {
+	UserService services.UserService
+}
+
+func NewUserController(userService services.UserService) *UserControllerImpl {
+	return &UserControllerImpl{
+		UserService: userService,
+	}
+}
 
 type UserResponse struct {
 	ID uint `json:"id"`
 	Fullname uint `json:"fullname"`
 }
 
-func CreateUser (c *gin.Context) {
+func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
 	var userInput services.UserInput
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
@@ -28,7 +38,7 @@ func CreateUser (c *gin.Context) {
 		return
 	}
 
-	createdUser, err := services.CreateUser(userInput)
+	createdUser, err := uc.UserService.CreateUser(userInput)
 
 	if err != nil {
 		log.Println("Failed to create user: ", err)
