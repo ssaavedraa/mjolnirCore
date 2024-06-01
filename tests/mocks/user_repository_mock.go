@@ -1,4 +1,4 @@
-package repositories
+package tests
 
 import (
 	"hex/cms/pkg/models"
