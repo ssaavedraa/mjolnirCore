@@ -2,7 +2,7 @@ package services
 
 import (
 	"hex/cms/pkg/models"
-	"hex/cms/pkg/repositories"
+	repositories "hex/cms/pkg/repositories/user_repository"
 
 	"golang.org/x/crypto/bcrypt"
 )
