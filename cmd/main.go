@@ -2,20 +2,17 @@ package main
 
 import (
 	"log"
-	"net/http"
-	"os"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"santiagosaavedra.com.co/invoices/internal/api"
-	"santiagosaavedra.com.co/invoices/internal/db"
-	"santiagosaavedra.com.co/invoices/internal/model"
+	"santiagosaavedra.com.co/invoices/pkg/config"
+	"santiagosaavedra.com.co/invoices/pkg/routes"
 )
 
 func main() {
-	env := os.Getenv("ENVIRONMENT")
+	config.LoadConfig()
+
+	env := config.GetEnv("ENVIRONMENT")
 
 	if env == "development" {
 		if error := godotenv.Load(); error != nil {
@@ -27,38 +24,11 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	frontendUrl := os.Getenv("FRONTEND_URL")
+	r := routes.SetupRouter()
 
-	db, error := db.GetInstance()
+	port := config.GetEnv("PORT")
 
-	if error != nil {
-		log.Fatalf("Database connection failed: %v", error)
-	}
-
-	db.AutoMigrate(
-		&model.User{},
-		&model.Company{},
-		&model.Invoice{},
-		&model.Shift{},
-		&model.InvoiceItem{},
-	)
-
-	router := gin.Default()
-
-	router.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{frontendUrl},
-    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-    AllowHeaders:     []string{"Origin", "Content-Type"},
-    AllowCredentials: true,
-    MaxAge:           12 * time.Hour,
-	}))
-
-	api.SetupRoutes(router)
-
-	port := os.Getenv("PORT")
-	address := ":" + port
-
-	if error := http.ListenAndServe(address, router); error != nil {
-		log.Fatalf("Failed to start server: %v", error)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("Error starting server: %v", err)
 	}
 }

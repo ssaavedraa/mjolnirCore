@@ -4,15 +4,18 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"santiagosaavedra.com.co/invoices/internal/db"
 	"santiagosaavedra.com.co/invoices/internal/model"
+	shiftService "santiagosaavedra.com.co/invoices/internal/service"
 )
 
 func ClockIn(c *gin.Context) {
+	//TODO: Migrate to services layer
 	user, _ := c.Get("user")
 
 	database, err := db.GetInstance()
@@ -44,6 +47,7 @@ func ClockIn(c *gin.Context) {
 }
 
 func ClockOut(c *gin.Context) {
+	//TODO: Migrate to services layer
 	user, _ := c.Get("user")
 
 	db, err := db.GetInstance()
@@ -83,18 +87,55 @@ func ClockOut(c *gin.Context) {
 
 func GetAll(c *gin.Context) {
 	user, _ := c.Get("user")
+	daysForwardQuery := c.Query("df")
+	daysBackwardQuery := c.Query("db")
 
-	db, err := db.GetInstance()
+	if daysForwardQuery == "" && daysBackwardQuery == "" {
+		//TODO: Migrate to services layer
+		db, err := db.GetInstance()
 
-	if err != nil {
-		log.Printf("Database unavailable: %v", err)
+		if err != nil {
+			log.Printf("Database unavailable: %v", err)
 
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Database unavailable"})
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Database unavailable"})
+			return
+		}
+
+		var shifts []model.Shift
+		db.Where("user_id = ?", user.(model.User).ID).Find(&shifts)
+
+		c.IndentedJSON(http.StatusOK, shifts)
+	}
+
+	daysForward, _ := strconv.Atoi(daysForwardQuery)
+
+	if daysForwardQuery != "" && daysForward <= 0 {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"message": "Days forward must be a positive integer",
+		})
+
 		return
 	}
 
-	var shifts []model.Shift
-	db.Where("user_id = ?", user.(model.User).ID).Find(&shifts)
+	daysBackward, _ := strconv.Atoi(daysBackwardQuery)
 
-	c.JSON(http.StatusOK, shifts)
+	if daysBackwardQuery != "" && daysBackward <= 0 {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"message": "Days backward must be a positive integer",
+		})
+
+		return
+	}
+
+	shifts, err := shiftService.GetShiftsInRage(daysBackward, daysForward, int(user.(model.User).ID))
+
+	if err != nil {
+		log.Printf("Failed to fetch shifts in range: %v", err)
+
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to fetch shifts in range",
+		})
+	}
+
+	c.IndentedJSON(http.StatusOK, shifts)
 }

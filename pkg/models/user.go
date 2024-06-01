@@ -1,4 +1,4 @@
-package model
+package models
 
 import "gorm.io/gorm"
 
@@ -7,7 +7,6 @@ type User struct {
 	Email string `json:"email" binding:"required" gorm:"uniqueIndex"`
 	Password string `json:"password" binding:"required"`
 	Fullname string `json:"fullname" binding:"required"`
-	Abn string `json:"abn" binding:"required" gorm:"uniqueIndex"`
 	PhoneNumber string `json:"phoneNumber" binding:"required"`
 	Address string `json:"address" binding:"required"`
 
