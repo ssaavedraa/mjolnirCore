@@ -15,12 +15,14 @@ type UserServiceImpl struct {
 	UserRepository repositories.UserRepository
 	Bcrypt interfaces.BcryptInterface
 	Jwt interfaces.JwtInterface
+	Config config.Config
 }
 
 func NewUserService (
 	userRepository repositories.UserRepository,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
+	config config.Config,
 ) UserService {
 	return &UserServiceImpl{
 		UserRepository: userRepository,
@@ -78,7 +80,7 @@ func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, str
 
 	log.Println("token: ", token)
 
-	jwtSecret := config.GetEnv("JWT_SECRET")
+	jwtSecret := us.Config.GetEnv("JWT_SECRET")
 
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 

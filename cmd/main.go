@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	config := config.NewConfig()
 	config.LoadConfig()
 
 	env := config.GetEnv("ENVIRONMENT")
@@ -29,7 +30,7 @@ func main() {
 	bcrypt := &utils.BcryptWrapper{}
 	jwt := &utils.JwtWrapper{}
 
-	r := routes.SetupRouter(bcrypt, jwt)
+	r := routes.SetupRouter(bcrypt, jwt, config)
 
 	port := config.GetEnv("PORT")
 

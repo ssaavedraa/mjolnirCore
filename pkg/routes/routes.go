@@ -16,6 +16,7 @@ import (
 func SetupRouter (
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
+	config config.Config,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -32,6 +33,7 @@ func SetupRouter (
 		userRepository,
 		bcrypt,
 		jwt,
+		config,
 	)
 
 	userController := controllers.NewUserController(userService)
