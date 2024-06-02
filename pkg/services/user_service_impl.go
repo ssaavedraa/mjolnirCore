@@ -5,7 +5,6 @@ import (
 	"hex/cms/pkg/interfaces"
 	"hex/cms/pkg/models"
 	"hex/cms/pkg/repositories"
-	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -28,6 +27,7 @@ func NewUserService (
 		UserRepository: userRepository,
 		Bcrypt: bcrypt,
 		Jwt: jwt,
+		Config: config,
 	}
 }
 
@@ -57,7 +57,6 @@ func (us *UserServiceImpl) CreateUser (input UserInput) (models.User, error) {
 
 func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, string, error) {
 	user, err := us.UserRepository.GetUserByEmail(credentials.Email)
-	log.Println("user: ", user.Password)
 
 	if err != nil {
 		return models.User{}, "",err
@@ -77,8 +76,6 @@ func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, str
 			"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
 		},
 	)
-
-	log.Println("token: ", token)
 
 	jwtSecret := us.Config.GetEnv("JWT_SECRET")
 
