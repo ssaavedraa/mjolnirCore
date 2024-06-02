@@ -1,13 +1,17 @@
-package interfaces
+package utils
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"hex/cms/pkg/interfaces"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type JwtWrapper struct {}
 
 func (j *JwtWrapper) NewWithClaims (
 	method jwt.SigningMethod,
 	claime jwt.Claims,
-) JwtTokenInterface {
+) interfaces.JwtTokenInterface {
 	return jwt.NewWithClaims(method, claime)
 }
 
