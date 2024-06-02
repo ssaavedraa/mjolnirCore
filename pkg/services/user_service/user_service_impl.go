@@ -1,27 +1,36 @@
 package services
 
 import (
-	"hex/cms/pkg/config"
+	"hex/cms/pkg/interfaces"
 	"hex/cms/pkg/models"
 	repositories "hex/cms/pkg/repositories/user_repository"
+	"log"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceImpl struct {
 	UserRepository repositories.UserRepository
+	Bcrypt interfaces.BcryptInterface
+	Jwt interfaces.JwtInterface
 }
 
-func NewUserService (userRepository repositories.UserRepository) UserService {
+func NewUserService (
+	userRepository repositories.UserRepository,
+	bcrypt interfaces.BcryptInterface,
+	jwt interfaces.JwtInterface,
+) UserService {
 	return &UserServiceImpl{
 		UserRepository: userRepository,
+		Bcrypt: bcrypt,
+		Jwt: jwt,
 	}
 }
 
 func (us *UserServiceImpl) CreateUser (input UserInput) (models.User, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), 10)
+	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 
 	if err != nil {
 		return models.User{}, err
@@ -46,19 +55,20 @@ func (us *UserServiceImpl) CreateUser (input UserInput) (models.User, error) {
 
 func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, string, error) {
 	user, err := us.UserRepository.GetUserByEmail(credentials.Email)
+	log.Println("user: ", user.Password)
 
 	if err != nil {
 		return models.User{}, "",err
 	}
 
-	if err := bcrypt.CompareHashAndPassword(
+	if err := us.Bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
 		[]byte(credentials.Password),
 	); err != nil {
 		return models.User{}, "", err
 	}
 
-	token := jwt.NewWithClaims(
+	token := us.Jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"sub": user.ID,
@@ -66,7 +76,7 @@ func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, str
 		},
 	)
 
-	jwtSecret := config.GetEnv("JWT_SECRET")
+	jwtSecret := os.Getenv("JWT_SECRET")
 
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 

@@ -5,6 +5,7 @@ import (
 
 	"hex/cms/pkg/config"
 	"hex/cms/pkg/routes"
+	utils "hex/cms/pkg/utils/wrappers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -25,7 +26,10 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	r := routes.SetupRouter()
+	bcrypt := &utils.BcryptWrapper{}
+	jwt := &utils.JwtWrapper{}
+
+	r := routes.SetupRouter(bcrypt, jwt)
 
 	port := config.GetEnv("PORT")
 

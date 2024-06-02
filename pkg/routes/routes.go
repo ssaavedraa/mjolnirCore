@@ -5,6 +5,7 @@ import (
 
 	"hex/cms/pkg/config"
 	controllers "hex/cms/pkg/controllers/user_controller"
+	"hex/cms/pkg/interfaces"
 	repositories "hex/cms/pkg/repositories/user_repository"
 	services "hex/cms/pkg/services/user_service"
 
@@ -12,7 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter () *gin.Engine {
+func SetupRouter (
+	bcrypt interfaces.BcryptInterface,
+	jwt interfaces.JwtInterface,
+) *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
@@ -24,7 +28,12 @@ func SetupRouter () *gin.Engine {
 	}))
 
 	userRepository := repositories.NewUserRepository()
-	userService := services.NewUserService(userRepository)
+	userService := services.NewUserService(
+		userRepository,
+		bcrypt,
+		jwt,
+	)
+
 	userController := controllers.NewUserController(userService)
 
 	api := r.Group("/api")
