@@ -11,3 +11,6 @@ packages:
   hex/cms/pkg/repositories:
     config:
       recursive: true
+  hex/cms/pkg/config:
+    config:
+      recursive: true
