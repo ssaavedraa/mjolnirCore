@@ -20,3 +20,15 @@ func (repo *UserRepositoryImpl) CreateUser (user models.User) (models.User, erro
 
 	return user, nil
 }
+
+func (repo *UserRepositoryImpl) GetUserByEmail (email string) (models.User, error) {
+	var user = models.User{}
+
+	result := config.DB.First(&user, "email = ?", email)
+
+	if result.Error != nil {
+		return user, result.Error
+	}
+
+	return user, nil
+}

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -8,13 +9,15 @@ import (
 	"hex/cms/pkg/utils"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserControllerImpl struct {
 	UserService services.UserService
 }
 
-func NewUserController(userService services.UserService) *UserControllerImpl {
+func NewUserController(userService services.UserService) UserController {
 	return &UserControllerImpl{
 		UserService: userService,
 	}
@@ -57,4 +60,47 @@ func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
 	})
 
 	c.JSON(http.StatusCreated, response)
+}
+
+func (uc *UserControllerImpl) Login (c *gin.Context) {
+	var credentials services.UserCredentials
+
+	if err := c.ShouldBindJSON(&credentials); err != nil {
+		log.Println("Invalid request payload: ", err)
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request payload",
+		})
+
+		return
+	}
+
+	user, token, err := uc.UserService.Login(credentials)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invalid credentials",
+			})
+
+			return
+		}
+
+		log.Println("Failed to login user: ", err)
+
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to login user. Please try again later",
+		})
+
+		return
+	}
+
+	response := utils.ConvertToResponse(user, utils.ResponseFields{
+		"id": user.ID,
+		"fullname": user.Fullname,
+		"companyId": user.Companies,
+		"token": token,
+	})
+
+	c.JSON(http.StatusOK, response)
 }

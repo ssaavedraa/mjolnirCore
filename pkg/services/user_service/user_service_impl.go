@@ -1,9 +1,12 @@
 package services
 
 import (
+	"hex/cms/pkg/config"
 	"hex/cms/pkg/models"
 	repositories "hex/cms/pkg/repositories/user_repository"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -11,15 +14,7 @@ type UserServiceImpl struct {
 	UserRepository repositories.UserRepository
 }
 
-type UserInput struct {
-	Email string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-	Fullname string `json:"fullname" binding:"required"`
-	PhoneNumber string `json:"phoneNumber" binding:"required"`
-	Address string `json:"address" binding:"required"`
-}
-
-func NewUserService (userRepository repositories.UserRepository) *UserServiceImpl {
+func NewUserService (userRepository repositories.UserRepository) UserService {
 	return &UserServiceImpl{
 		UserRepository: userRepository,
 	}
@@ -47,4 +42,37 @@ func (us *UserServiceImpl) CreateUser (input UserInput) (models.User, error) {
 	}
 
 	return createdUser, nil
+}
+
+func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, string, error) {
+	user, err := us.UserRepository.GetUserByEmail(credentials.Email)
+
+	if err != nil {
+		return models.User{}, "",err
+	}
+
+	if err := bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(credentials.Password),
+	); err != nil {
+		return models.User{}, "", err
+	}
+
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"sub": user.ID,
+			"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
+		},
+	)
+
+	jwtSecret := config.GetEnv("JWT_SECRET")
+
+	tokenString, err := token.SignedString([]byte(jwtSecret))
+
+	if err != nil {
+		return models.User{}, "", err
+	}
+
+	return user, tokenString, nil
 }
