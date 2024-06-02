@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	services "hex/cms/pkg/services/user_service"
+	"hex/cms/pkg/services"
 	"hex/cms/pkg/utils"
 
 	"github.com/gin-gonic/gin"

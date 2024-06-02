@@ -1,11 +1,11 @@
 package services
 
 import (
+	"hex/cms/pkg/config"
 	"hex/cms/pkg/interfaces"
 	"hex/cms/pkg/models"
-	repositories "hex/cms/pkg/repositories/user_repository"
+	"hex/cms/pkg/repositories"
 	"log"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -76,7 +76,9 @@ func (us *UserServiceImpl) Login (credentials UserCredentials) (models.User, str
 		},
 	)
 
-	jwtSecret := os.Getenv("JWT_SECRET")
+	log.Println("token: ", token)
+
+	jwtSecret := config.GetEnv("JWT_SECRET")
 
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 

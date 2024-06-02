@@ -3,22 +3,28 @@ package tests
 import (
 	"errors"
 	"hex/cms/pkg/models"
-	services "hex/cms/pkg/services/user_service"
-	"hex/cms/tests/mocks"
+	"hex/cms/pkg/services"
+	interfaces_mocks "hex/cms/tests/mocks/interfaces"
+	repositories_mocks "hex/cms/tests/mocks/repositories"
 	"testing"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
-type MockBcrypt struct {
-	mock.Mock
-}
-
 func TestCreateUser_Success (t *testing.T) {
-	mockRepo := new(mocks.MockUserRepository)
-	userService := services.NewUserService(mockRepo)
+	mockRepo := new(repositories_mocks.MockUserRepository)
+	mockBcrypt := new(interfaces_mocks.MockBcryptInterface)
+	mockJwt := new(interfaces_mocks.MockJwtInterface)
+	userService := services.NewUserService(
+		mockRepo,
+		mockBcrypt,
+		mockJwt,
+
+	)
+
 	input := services.UserInput{
 		Email: "test@mail.com",
 		Password: "password",
@@ -39,7 +45,6 @@ func TestCreateUser_Success (t *testing.T) {
 		Address: input.Address,
 	}, nil)
 
-	mockBcrypt := new(MockBcrypt)
 	mockBcrypt.On(
 		"GenerateFromPassword",
 		[]byte("password"),
@@ -56,18 +61,26 @@ func TestCreateUser_Success (t *testing.T) {
 	assert.Equal(t, "Test Address", createdUser.Address)
 }
 
-func TestCreateUser_Error (t *testing.T) {
-	mockrepo := new(mocks.MockUserRepository)
-	userService := services.NewUserService(mockrepo)
+func TestCreateUser_DatabaseError (t *testing.T) {
+	mockRepo := new(repositories_mocks.MockUserRepository)
+	mockBcrypt := new(interfaces_mocks.MockBcryptInterface)
+	mockJwt := new(interfaces_mocks.MockJwtInterface)
+	userService := services.NewUserService(
+		mockRepo,
+		mockBcrypt,
+		mockJwt,
+
+	)
+
 	input := services.UserInput{
 		Email: "test@mail.com",
-		Password: "testPassword123!",
+		Password: "password",
 		Fullname: "Test Name",
 		PhoneNumber: "1234567890",
 		Address: "Test Address",
 	}
 
-	mockrepo.On(
+	mockRepo.On(
 		"CreateUser",
 		mock.AnythingOfType("models.User"),
 	).Return(
@@ -75,7 +88,106 @@ func TestCreateUser_Error (t *testing.T) {
 		errors.New("Database error"),
 	)
 
+	mockBcrypt.On(
+		"GenerateFromPassword",
+		[]byte("password"),
+		10,
+	).Return([]byte("hashedPassword"), nil)
+
 	_, err := userService.CreateUser(input)
 
 	assert.Error(t, err)
+	assert.ErrorContains(t, err, "Database error")
+}
+
+
+func TestCreateUser_BcryptError (t *testing.T) {
+	mockRepo := new(repositories_mocks.MockUserRepository)
+	mockBcrypt := new(interfaces_mocks.MockBcryptInterface)
+	mockJwt := new(interfaces_mocks.MockJwtInterface)
+	userService := services.NewUserService(
+		mockRepo,
+		mockBcrypt,
+		mockJwt,
+
+	)
+
+	input := services.UserInput{
+		Email: "test@mail.com",
+		Password: "password",
+		Fullname: "Test Name",
+		PhoneNumber: "1234567890",
+		Address: "Test Address",
+	}
+
+	mockRepo.On(
+		"CreateUser",
+		mock.AnythingOfType("models.User"),
+	).Return(
+		models.User{},
+		errors.New("Database error"),
+	)
+
+	mockBcrypt.On(
+		"GenerateFromPassword",
+		[]byte("password"),
+		10,
+	).Return(nil , errors.New("Bcrypt error"))
+
+	_, err := userService.CreateUser(input)
+
+	assert.Error(t, err)
+	assert.ErrorContains(t, err, "Bcrypt error")
+}
+
+
+
+func TestLoginUser_Success (t *testing.T) {
+	mockRepo := new(repositories_mocks.MockUserRepository)
+	mockBcrypt := new(interfaces_mocks.MockBcryptInterface)
+	mockJwt := new(interfaces_mocks.MockJwtInterface)
+	mockToken := new(interfaces_mocks.MockJwtTokenInterface)
+	userService := services.NewUserService(
+		mockRepo,
+		mockBcrypt,
+		mockJwt,
+
+	)
+
+	credentials := services.UserCredentials{
+		Email: "test@mail.com",
+		Password: "password",
+	}
+
+	mockRepo.On(
+		"GetUserByEmail",
+		credentials.Email,
+	).Return(models.User{
+		Model: gorm.Model{ID: 1},
+		Email: credentials.Email,
+		Password: "hashedPassword",
+	}, nil)
+
+	mockBcrypt.On(
+		"CompareHashAndPassword",
+		[]byte("hashedPassword"),
+		[]byte(credentials.Password),
+	).Return(nil)
+
+	mockToken.On(
+		"SignedString",
+		mock.Anything,
+	).Return("tokenString")
+
+	mockJwt.On(
+		"NewWithClaims",
+		jwt.SigningMethodHS256,
+		mock.AnythingOfType("jwt.MapClaims"),
+	).Return(mockToken)
+
+	_, _, err := userService.Login(credentials)
+
+	assert.NoError(t, err)
+	// assert.Equal(t, "test@mail.com", user.Email)
+	// assert.Equal(t, "tokenString", token)
 }

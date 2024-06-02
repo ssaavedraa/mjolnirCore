@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"hex/cms/pkg/config"
-	controllers "hex/cms/pkg/controllers/user_controller"
+	"hex/cms/pkg/controllers"
 	"hex/cms/pkg/interfaces"
-	repositories "hex/cms/pkg/repositories/user_repository"
-	services "hex/cms/pkg/services/user_service"
+	"hex/cms/pkg/repositories"
+	"hex/cms/pkg/services"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
