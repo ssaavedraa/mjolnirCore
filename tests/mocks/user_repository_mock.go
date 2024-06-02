@@ -1,4 +1,4 @@
-package tests
+package mocks
 
 import (
 	"hex/cms/pkg/models"

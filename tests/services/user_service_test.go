@@ -4,7 +4,7 @@ import (
 	"errors"
 	"hex/cms/pkg/models"
 	services "hex/cms/pkg/services/user_service"
-	tests "hex/cms/tests/mocks"
+	"hex/cms/tests/mocks"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +17,7 @@ type MockBcrypt struct {
 }
 
 func TestCreateUser_Success (t *testing.T) {
-	mockRepo := new(tests.MockUserRepository)
+	mockRepo := new(mocks.MockUserRepository)
 	userService := services.NewUserService(mockRepo)
 	input := services.UserInput{
 		Email: "test@mail.com",
@@ -57,7 +57,7 @@ func TestCreateUser_Success (t *testing.T) {
 }
 
 func TestCreateUser_Error (t *testing.T) {
-	mockrepo := new(tests.MockUserRepository)
+	mockrepo := new(mocks.MockUserRepository)
 	userService := services.NewUserService(mockrepo)
 	input := services.UserInput{
 		Email: "test@mail.com",
