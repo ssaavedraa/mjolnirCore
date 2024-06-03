@@ -6,20 +6,12 @@ import (
 	"hex/cms/pkg/config"
 	"hex/cms/pkg/routes"
 	utils "hex/cms/pkg/utils/wrappers"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	config := config.NewConfig()
 
 	config.LoadConfig()
-
-	env := config.GetEnv("ENVIRONMENT")
-
-	if env == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
 
 	bcrypt := &utils.BcryptWrapper{}
 	jwt := &utils.JwtWrapper{}

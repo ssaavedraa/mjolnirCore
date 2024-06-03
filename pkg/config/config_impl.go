@@ -7,6 +7,7 @@ import (
 
 	"hex/cms/pkg/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,6 +24,10 @@ func NewConfig () Config {
 func (c *ConfigImpl) LoadConfig () {
 	env := c.GetEnv("ENVIRONMENT")
 
+	if env == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	if env == "development" {
 		if err := godotenv.Load(); err != nil {
 			log.Fatalf("Error loading .env file: %v", err)
@@ -38,12 +43,13 @@ func (c *ConfigImpl) LoadConfig () {
 		c.GetEnv("DB_PORT"),
 	)
 
-	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DbInstance, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
+	DB = DbInstance
 
 	err = DB.AutoMigrate(
 		&models.User{},
