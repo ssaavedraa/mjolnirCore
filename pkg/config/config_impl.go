@@ -24,8 +24,15 @@ func (c *ConfigImpl) LoadConfig () {
 	err := godotenv.Load()
 
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
+
+
+	// if env == "development" {
+	// 	if error := godotenv.Load(); error != nil {
+	// 		log.Fatalf("Error loading .env file: %v", error)
+	// 	}
+	// }
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",

@@ -18,12 +18,6 @@ func main() {
 
 	env := config.GetEnv("ENVIRONMENT")
 
-	if env == "development" {
-		if error := godotenv.Load(); error != nil {
-			log.Fatalf("Error loading .env file: %v", error)
-		}
-	}
-
 	if env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
