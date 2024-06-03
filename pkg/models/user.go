@@ -10,7 +10,9 @@ type User struct {
 	PhoneNumber string `json:"phoneNumber" binding:"required"`
 	Address string `json:"address" binding:"required"`
 
-	Companies []Company `gorm:"foreignKey:UserID"`
+	CompanyID uint
 	Shifts []Shift `gorm:"foreignKey:UserID"`
 	Invoices []Invoice `gorm:"foreignKey:UserID"`
+	Products []Product `gorm:"foreignKey:CreatedBy"`
+	Company     Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
