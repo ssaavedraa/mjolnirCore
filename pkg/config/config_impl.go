@@ -21,18 +21,13 @@ func NewConfig () Config {
 }
 
 func (c *ConfigImpl) LoadConfig () {
-	err := godotenv.Load()
+	env := c.GetEnv("ENVIRONMENT")
 
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+	if env == "development" {
+		if err := godotenv.Load(); err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+		}
 	}
-
-
-	// if env == "development" {
-	// 	if error := godotenv.Load(); error != nil {
-	// 		log.Fatalf("Error loading .env file: %v", error)
-	// 	}
-	// }
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
@@ -43,7 +38,7 @@ func (c *ConfigImpl) LoadConfig () {
 		c.GetEnv("DB_PORT"),
 	)
 
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)

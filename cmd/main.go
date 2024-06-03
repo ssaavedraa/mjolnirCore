@@ -8,7 +8,6 @@ import (
 	utils "hex/cms/pkg/utils/wrappers"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
