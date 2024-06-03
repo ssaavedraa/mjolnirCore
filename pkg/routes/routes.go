@@ -57,6 +57,8 @@ func SetupRouter (
 
 	{
 		productApi.POST("", productController.CreateProduct)
+		productApi.GET("", productController.GetAllProducts)
+		productApi.GET("/:id", productController.GetProductById)
 	}
 
 	return r

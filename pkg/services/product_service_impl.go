@@ -35,3 +35,23 @@ func (ps *ProductServiceImpl) CreateProduct (input ProductInput) (models.Product
 
 	return createdProduct, nil
 }
+
+func (ps *ProductServiceImpl) GetAllProducts () ([]models.Product, error) {
+	products, err := ps.ProductRepository.GetAllProducts()
+
+	if err != nil {
+		return []models.Product{}, err
+	}
+
+	return products, nil
+}
+
+func (ps *ProductServiceImpl) GetProductById (id uint) (models.Product, error) {
+	product, err := ps.ProductRepository.GetProductById(id)
+
+	if err != nil {
+		return models.Product{}, err
+	}
+
+	return product, nil
+}
