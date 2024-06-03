@@ -5,8 +5,9 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	"hex/cms/internal_deprecated/email"
+
 	"github.com/gin-gonic/gin"
-	"santiagosaavedra.com.co/invoices/internal/email"
 )
 
 type Email struct {
@@ -49,4 +50,8 @@ func SendEmailHandler (context *gin.Context) {
 	}
 
 	context.IndentedJSON(http.StatusCreated, gin.H{"message" : "Email sent successfully"})
+}
+
+func ClockInHandler (context *gin.Context) {
+	context.IndentedJSON(http.StatusOK, gin.H{"message": "clocked in!"})
 }

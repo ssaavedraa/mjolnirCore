@@ -2,18 +2,21 @@ package main
 
 import (
 	"log"
-	"net/http"
-	"os"
-	"time"
 
-	"github.com/gin-contrib/cors"
+	"hex/cms/pkg/config"
+	"hex/cms/pkg/routes"
+	utils "hex/cms/pkg/utils/wrappers"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"santiagosaavedra.com.co/invoices/internal/api"
 )
 
 func main() {
-	env := os.Getenv("ENVIRONMENT")
+	config := config.NewConfig()
+
+	config.LoadConfig()
+
+	env := config.GetEnv("ENVIRONMENT")
 
 	if env == "development" {
 		if error := godotenv.Load(); error != nil {
@@ -25,24 +28,14 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	frontendUrl := os.Getenv("FRONTEND_URL")
+	bcrypt := &utils.BcryptWrapper{}
+	jwt := &utils.JwtWrapper{}
 
-	router := gin.Default()
+	r := routes.SetupRouter(bcrypt, jwt, config)
 
-	router.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{frontendUrl},
-    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-    AllowHeaders:     []string{"Origin", "Content-Type"},
-    AllowCredentials: true,
-    MaxAge:           12 * time.Hour,
-}))
+	port := config.GetEnv("PORT")
 
-	api.SetupRoutes(router)
-
-	port := os.Getenv("PORT")
-	address := ":" + port
-
-	if error := http.ListenAndServe(address, router); error != nil {
-		log.Fatalf("Failed to start server: %v", error)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("Error starting server: %v", err)
 	}
 }

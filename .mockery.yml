@@ -1,0 +1,16 @@
+all: true
+testonly: false
+with-expecter: true
+dir: tests/mocks/{{ replaceAll .InterfaceDirRelative "pkg" ""}}
+outpkg: '{{.PackageName}}_mocks'
+filename: '{{.InterfaceName | snakecase }}_mock.go'
+packages:
+  hex/cms/pkg/interfaces:
+    config:
+      recursive: true
+  hex/cms/pkg/repositories:
+    config:
+      recursive: true
+  hex/cms/pkg/config:
+    config:
+      recursive: true

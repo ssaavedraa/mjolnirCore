@@ -1,0 +1,15 @@
+version: '3.8'
+
+volumes:
+  hex-cms:
+
+services:
+  hex-cms:
+    image: postgres:13
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: Australia/Melbourne
