@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"hex/cms/pkg/services"
 	"hex/cms/pkg/utils"
+	"hex/cms/pkg/utils/logging"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -32,7 +32,7 @@ func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
 	var userInput services.UserInput
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
-		log.Println("Invalid request payload: ", err)
+		logging.Error(err)
 
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request payload",
@@ -44,7 +44,7 @@ func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
 	createdUser, err := uc.UserService.CreateUser(userInput)
 
 	if err != nil {
-		log.Println("Failed to create user: ", err)
+		logging.Error(err)
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to create user. Please try again later",
@@ -66,7 +66,7 @@ func (uc *UserControllerImpl) Login (c *gin.Context) {
 	var credentials services.UserCredentials
 
 	if err := c.ShouldBindJSON(&credentials); err != nil {
-		log.Println("Invalid request payload: ", err)
+		logging.Error(err)
 
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request payload",
@@ -85,8 +85,7 @@ func (uc *UserControllerImpl) Login (c *gin.Context) {
 
 			return
 		}
-
-		log.Println("Failed to login user: ", err)
+		logging.Error(err)
 
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to login user. Please try again later",

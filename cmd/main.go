@@ -13,6 +13,7 @@ import (
 
 func main() {
 	config := config.NewConfig()
+
 	config.LoadConfig()
 
 	env := config.GetEnv("ENVIRONMENT")
