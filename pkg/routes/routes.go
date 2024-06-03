@@ -29,22 +29,34 @@ func SetupRouter (
 	}))
 
 	userRepository := repositories.NewUserRepository()
+	productRepository := repositories.NewProductRepository()
+
 	userService := services.NewUserService(
 		userRepository,
 		bcrypt,
 		jwt,
 		config,
 	)
+	productService := services.NewProductService(
+		productRepository,
+	)
 
 	userController := controllers.NewUserController(userService)
+	productController := controllers.NewProductController(productService)
 
 	api := r.Group("/api")
 
 	userApi := api.Group("/users")
 
 	{
-		userApi.POST("/create", userController.CreateUser)
+		userApi.POST("", userController.CreateUser)
 		userApi.POST("/login", userController.Login)
+	}
+
+	productApi := api.Group("/products")
+
+	{
+		productApi.POST("", productController.CreateProduct)
 	}
 
 	return r

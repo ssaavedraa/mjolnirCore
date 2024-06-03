@@ -17,7 +17,7 @@ type UserControllerImpl struct {
 	UserService services.UserService
 }
 
-func NewUserController(userService services.UserService) UserController {
+func NewUserController (userService services.UserService) UserController {
 	return &UserControllerImpl{
 		UserService: userService,
 	}

@@ -7,7 +7,7 @@ import (
 
 type UserRepositoryImpl struct{}
 
-func NewUserRepository() UserRepository {
+func NewUserRepository () UserRepository {
 	return &UserRepositoryImpl{}
 }
 
