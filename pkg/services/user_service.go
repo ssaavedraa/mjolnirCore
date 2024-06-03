@@ -8,6 +8,7 @@ type UserInput struct {
 	Fullname string `json:"fullname" binding:"required"`
 	PhoneNumber string `json:"phoneNumber" binding:"required"`
 	Address string `json:"address" binding:"required"`
+	CompanyId uint `json:"companyId" binding:"required"`
 }
 
 type UserCredentials struct {

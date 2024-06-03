@@ -49,6 +49,7 @@ func (c *ConfigImpl) LoadConfig () {
 		&models.Invoice{},
 		&models.Shift{},
 		&models.InvoiceItem{},
+		&models.Product{},
 	)
 
 	if err != nil {

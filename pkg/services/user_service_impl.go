@@ -44,6 +44,7 @@ func (us *UserServiceImpl) CreateUser (input UserInput) (models.User, error) {
 		Fullname: input.Fullname,
 		PhoneNumber: input.PhoneNumber,
 		Address: input.Address,
+		CompanyID: input.CompanyId,
 	}
 
 	createdUser, err := us.UserRepository.CreateUser(user)

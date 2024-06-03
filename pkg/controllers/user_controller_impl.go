@@ -56,7 +56,7 @@ func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
 	response := utils.ConvertToResponse(createdUser, utils.ResponseFields{
 		"id": createdUser.ID,
 		"fullname": createdUser.Fullname,
-		"companyId": createdUser.Companies,
+		"companyId": createdUser.CompanyID,
 	})
 
 	c.JSON(http.StatusCreated, response)
@@ -97,7 +97,7 @@ func (uc *UserControllerImpl) Login (c *gin.Context) {
 	response := utils.ConvertToResponse(user, utils.ResponseFields{
 		"id": user.ID,
 		"fullname": user.Fullname,
-		"companyId": user.Companies,
+		"companyId": user.CompanyID,
 		"token": token,
 	})
 
