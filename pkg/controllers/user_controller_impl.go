@@ -75,7 +75,7 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 		return
 	}
 
-	user, token, err := uc.UserService.Login(credentials)
+	user, err := uc.UserService.Login(credentials)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
@@ -98,7 +98,6 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 		"id":        user.ID,
 		"name":      user.Fullname,
 		"companyId": user.CompanyID,
-		"token":     token,
 	})
 
 	c.JSON(http.StatusCreated, response)
