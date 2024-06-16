@@ -17,18 +17,18 @@ type UserControllerImpl struct {
 	UserService services.UserService
 }
 
-func NewUserController (userService services.UserService) UserController {
+func NewUserController(userService services.UserService) UserController {
 	return &UserControllerImpl{
 		UserService: userService,
 	}
 }
 
 type UserResponse struct {
-	ID uint `json:"id"`
+	ID       uint `json:"id"`
 	Fullname uint `json:"fullname"`
 }
 
-func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
+func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 	var userInput services.UserInput
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
@@ -54,15 +54,15 @@ func (uc *UserControllerImpl) CreateUser (c *gin.Context) {
 	}
 
 	response := utils.ConvertToResponse(createdUser, utils.ResponseFields{
-		"id": createdUser.ID,
-		"fullname": createdUser.Fullname,
+		"id":        createdUser.ID,
+		"fullname":  createdUser.Fullname,
 		"companyId": createdUser.CompanyID,
 	})
 
 	c.JSON(http.StatusCreated, response)
 }
 
-func (uc *UserControllerImpl) Login (c *gin.Context) {
+func (uc *UserControllerImpl) Login(c *gin.Context) {
 	var credentials services.UserCredentials
 
 	if err := c.ShouldBindJSON(&credentials); err != nil {
@@ -95,11 +95,11 @@ func (uc *UserControllerImpl) Login (c *gin.Context) {
 	}
 
 	response := utils.ConvertToResponse(user, utils.ResponseFields{
-		"id": user.ID,
-		"fullname": user.Fullname,
+		"id":        user.ID,
+		"name":      user.Fullname,
 		"companyId": user.CompanyID,
-		"token": token,
+		"token":     token,
 	})
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusCreated, response)
 }
