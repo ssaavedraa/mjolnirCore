@@ -18,5 +18,5 @@ type UserCredentials struct {
 
 type UserService interface {
 	CreateUser(input UserInput) (models.User, error)
-	Login(credentials UserCredentials) (models.User, error)
+	Login(credentials UserCredentials) (models.User, string, error)
 }

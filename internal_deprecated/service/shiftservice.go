@@ -3,7 +3,6 @@ package shiftService
 import (
 	"time"
 
-	"hex/cms/internal_deprecated/db"
 	"hex/cms/internal_deprecated/model"
 )
 
@@ -20,7 +19,7 @@ func GetShiftsInRage(lowerLimit, upperLimit, userId int) ([]model.Shift, error) 
 	lowerDate := today.AddDate(0, 0, -lowerLimit)
 	upperDate := today.AddDate(0, 0, upperLimit)
 
-	if (lowerLimit > 0 && upperLimit > 0) {
+	if lowerLimit > 0 && upperLimit > 0 {
 		database = database.Where("to_char(start, 'YYYY-MM-DD') >= ?", lowerDate.Format("2006-01-02")).Where("to_char(start, 'YYYY-MM-DD') <= ?", upperDate.Format("2006-01-02"))
 	} else if lowerLimit > 0 && upperLimit == 0 {
 		database = database.Where("to_char(start, 'YYYY-MM-DD') >= ?", lowerDate.Format("2006-01-02")).Where("to_char(start, 'YYYY-MM-DD') < ?", today.Format("2006-01-02"))

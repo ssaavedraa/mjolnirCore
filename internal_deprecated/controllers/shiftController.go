@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"hex/cms/internal_deprecated/db"
 	"hex/cms/internal_deprecated/model"
 	shiftService "hex/cms/internal_deprecated/service"
 
@@ -24,7 +23,7 @@ func ClockIn(c *gin.Context) {
 	if err != nil {
 		log.Printf("Database unavailable")
 
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Database unavailable"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Database unavailable"})
 		return
 	}
 
@@ -56,7 +55,7 @@ func ClockOut(c *gin.Context) {
 	if err != nil {
 		log.Printf("Database unavailable")
 
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Database unavailable"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Database unavailable"})
 		return
 	}
 
@@ -98,7 +97,7 @@ func GetAll(c *gin.Context) {
 		if err != nil {
 			log.Printf("Database unavailable: %v", err)
 
-			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message" : "Database unavailable"})
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Database unavailable"})
 			return
 		}
 

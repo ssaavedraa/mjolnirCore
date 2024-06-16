@@ -34,6 +34,7 @@ func SetupRouter(
 	userService := services.NewUserService(
 		userRepository,
 		bcrypt,
+		jwt,
 		config,
 	)
 	productService := services.NewProductService(

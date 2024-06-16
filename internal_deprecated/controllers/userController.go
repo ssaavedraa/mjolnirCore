@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"hex/cms/internal_deprecated/db"
 	"hex/cms/internal_deprecated/model"
 
 	"github.com/gin-gonic/gin"
@@ -16,21 +15,21 @@ import (
 	"gorm.io/gorm"
 )
 
-func SignUp (c *gin.Context) {
+func SignUp(c *gin.Context) {
 	var body struct {
-		Email string `json:"email" binding:"required"`
-		Password string `json:"password" binding:"required"`
-		Fullname string `json:"fullname" binding:"required"`
-		Abn string `json:"abn" binding:"required"`
+		Email       string `json:"email" binding:"required"`
+		Password    string `json:"password" binding:"required"`
+		Fullname    string `json:"fullname" binding:"required"`
+		Abn         string `json:"abn" binding:"required"`
 		PhoneNumber string `json:"phoneNumber" binding:"required"`
-		Address string `json:"address" binding:"required"`
+		Address     string `json:"address" binding:"required"`
 	}
 
 	if err := c.Bind(&body); err != nil {
 		log.Printf("Invalid request body: %v", err)
 
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
-			"message" : "Invalid request body",
+			"message": "Invalid request body",
 		})
 		return
 	}
@@ -41,19 +40,19 @@ func SignUp (c *gin.Context) {
 		log.Printf("Failed to hash password: %v", err)
 
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"message" : "Failed to hash password",
+			"message": "Failed to hash password",
 		})
 
 		return
 	}
 
 	user := model.User{
-		Email: body.Email,
-		Password: string(hash),
-		Fullname: body.Fullname,
-		Abn: body.Abn,
+		Email:       body.Email,
+		Password:    string(hash),
+		Fullname:    body.Fullname,
+		Abn:         body.Abn,
 		PhoneNumber: body.PhoneNumber,
-		Address: body.Address,
+		Address:     body.Address,
 	}
 
 	database, err := db.GetInstance()
@@ -62,7 +61,7 @@ func SignUp (c *gin.Context) {
 		log.Printf("Database unavailable: %v", err)
 
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
-			"message" : "Database unavailable",
+			"message": "Database unavailable",
 		})
 
 		return
@@ -89,14 +88,14 @@ func SignUp (c *gin.Context) {
 	}
 
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("session", signedToken, 3600 * 24 * 7, "", "", false, true)
+	c.SetCookie("session", signedToken, 3600*24*7, "", "", false, true)
 
 	c.IndentedJSON(http.StatusCreated, gin.H{"message": "Welcome!"})
 }
 
-func LogIn (c *gin.Context) {
+func LogIn(c *gin.Context) {
 	var credentials struct {
-		Email string `json:"email" binding:"required"`
+		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
 
@@ -156,19 +155,19 @@ func LogIn (c *gin.Context) {
 	}
 
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("session", signedToken, 3600 * 24 * 7, "", "", false, true)
+	c.SetCookie("session", signedToken, 3600*24*7, "", "", false, true)
 
 	c.IndentedJSON(http.StatusCreated, gin.H{})
 }
 
-func LogOut (c *gin.Context) {
+func LogOut(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("session", "", -1, "", "", false, true)
 
 	c.IndentedJSON(http.StatusCreated, gin.H{})
 }
 
-func GetUserDetails (c *gin.Context) {
+func GetUserDetails(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	log.Println(user)
@@ -176,7 +175,7 @@ func GetUserDetails (c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
-func getToken (user *model.User) (signedToken string, err error) {
+func getToken(user *model.User) (signedToken string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),

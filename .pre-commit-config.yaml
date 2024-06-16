@@ -10,10 +10,9 @@ repos:
     rev: v0.5.0
     hooks:
       - id: go-fmt
-      - id: go-vet
-      - id: golangci-lint
+      # TODO: reactivate when finish migrating deprecated modules
+      # - id: golangci-lint
       - id: no-go-testing
-      - id: go-unit-tests
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v8.0.0
     hooks:

@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"hex/cms/internal_deprecated/db"
 	"hex/cms/internal_deprecated/model"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Auth (c *gin.Context) {
+func Auth(c *gin.Context) {
 	tokenString, err := c.Cookie("session")
 
 	if err != nil {
@@ -70,8 +69,8 @@ func Auth (c *gin.Context) {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				log.Printf("Failed to authenticate: %v", err)
 
-			c.SetCookie("session", "", -1, "", "", false, true)
-			c.AbortWithStatus(http.StatusUnauthorized)
+				c.SetCookie("session", "", -1, "", "", false, true)
+				c.AbortWithStatus(http.StatusUnauthorized)
 
 				return
 			}
@@ -88,8 +87,8 @@ func Auth (c *gin.Context) {
 	} else {
 		log.Printf("Authentication error: %v", err)
 
-			c.SetCookie("session", "", -1, "", "", false, true)
-			c.AbortWithStatus(http.StatusUnauthorized)
+		c.SetCookie("session", "", -1, "", "", false, true)
+		c.AbortWithStatus(http.StatusUnauthorized)
 
 		return
 	}

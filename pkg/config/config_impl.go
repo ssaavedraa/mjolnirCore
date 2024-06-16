@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -43,7 +44,9 @@ func (c *ConfigImpl) LoadConfig() {
 		c.GetEnv("DB_PORT"),
 	)
 
-	DbInstance, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DbInstance, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
