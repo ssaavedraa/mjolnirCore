@@ -1,6 +1,15 @@
-# HEX CMS service
+# MjolnirCore
 
-This project is a Content Management System (CMS) implemented in Go, using the Gin web framework. It includes features for managing users, products, and invoices, with scalable architecture and robust API endpoints.
+**Description**: MjolnirCore is the central repository and core framework of our Content Management System (CMS), implemented in Go with the Gin web framework. Named after Thor's mighty hammer from Norse mythology, MjolnirCore embodies robustness, power, and reliability in managing content and data within our application.
+
+### Key Features:
+
+- **Scalable Architecture**: Built with scalability in mind, MjolnirCore provides a solid foundation to handle growing demands and data volumes.
+- **Robust API Endpoints**: Includes a comprehensive set of API endpoints for managing users, products, and invoices, ensuring efficient data operations.
+- **Secure Management**: Offers secure storage and management of essential CMS components, maintaining data integrity and accessibility.
+- **Usage**: MjolnirCore serves as the backbone for our CMS, facilitating efficient content management and data operations with its powerful features and scalable architecture.
+
+***Dependencies***: Built on Go programming language and Gin web framework, leveraging their strengths in performance, concurrency, and web application development.
 
 ## Project structure
 
