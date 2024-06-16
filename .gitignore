@@ -28,3 +28,5 @@ _test
 
 # Environment variable file
 .env
+
+**/tmp/*

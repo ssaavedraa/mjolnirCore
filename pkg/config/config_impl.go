@@ -15,13 +15,13 @@ import (
 
 var DB *gorm.DB
 
-type ConfigImpl struct {}
+type ConfigImpl struct{}
 
-func NewConfig () Config {
+func NewConfig() Config {
 	return &ConfigImpl{}
 }
 
-func (c *ConfigImpl) LoadConfig () {
+func (c *ConfigImpl) LoadConfig() {
 	env := c.GetEnv("ENVIRONMENT")
 
 	if env == "production" {
@@ -65,6 +65,6 @@ func (c *ConfigImpl) LoadConfig () {
 	}
 }
 
-func (c *ConfigImpl) GetEnv (key string) string {
+func (c *ConfigImpl) GetEnv(key string) string {
 	return os.Getenv(key)
 }
