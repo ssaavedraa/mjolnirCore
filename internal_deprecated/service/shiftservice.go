@@ -3,7 +3,7 @@ package shiftService
 import (
 	"time"
 
-	"hex/cms/internal_deprecated/model"
+	"hex/mjolnir-core/internal_deprecated/model"
 )
 
 func GetShiftsInRage(lowerLimit, upperLimit, userId int) ([]model.Shift, error) {

@@ -1,4 +1,4 @@
-module hex/cms
+module hex/mjolnir-core
 
 go 1.22.1
 

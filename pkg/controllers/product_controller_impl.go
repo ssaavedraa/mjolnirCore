@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"hex/cms/pkg/services"
-	"hex/cms/pkg/utils"
-	"hex/cms/pkg/utils/logging"
+	"hex/mjolnir-core/pkg/services"
+	"hex/mjolnir-core/pkg/utils"
+	"hex/mjolnir-core/pkg/utils/logging"
 	"net/http"
 	"strconv"
 
@@ -14,13 +14,13 @@ type ProductControllerImpl struct {
 	ProductService services.ProductService
 }
 
-func NewProductController (productService services.ProductService) ProductController {
-	return &ProductControllerImpl {
+func NewProductController(productService services.ProductService) ProductController {
+	return &ProductControllerImpl{
 		ProductService: productService,
 	}
 }
 
-func (pc *ProductControllerImpl) CreateProduct (c *gin.Context) {
+func (pc *ProductControllerImpl) CreateProduct(c *gin.Context) {
 	// userId, _ := c.Get("userId")
 	// companyId, _ := c.Get("companyId")
 	var productInput services.ProductInput
@@ -48,17 +48,17 @@ func (pc *ProductControllerImpl) CreateProduct (c *gin.Context) {
 	}
 
 	response := utils.ConvertToResponse(createdProduct, utils.ResponseFields{
-		"id": createdProduct.ID,
-		"name": createdProduct.Name,
+		"id":          createdProduct.ID,
+		"name":        createdProduct.Name,
 		"description": createdProduct.Description,
-		"price": createdProduct.Price,
-		"imageUrl": createdProduct.ImageUrl,
+		"price":       createdProduct.Price,
+		"imageUrl":    createdProduct.ImageUrl,
 	})
 
 	c.JSON(http.StatusCreated, response)
 }
 
-func (pc *ProductControllerImpl) GetAllProducts (c *gin.Context) {
+func (pc *ProductControllerImpl) GetAllProducts(c *gin.Context) {
 	products, err := pc.ProductService.GetAllProducts()
 
 	if err != nil {
@@ -75,11 +75,11 @@ func (pc *ProductControllerImpl) GetAllProducts (c *gin.Context) {
 
 	for _, product := range products {
 		formattedProductResponse := utils.ConvertToResponse(product, utils.ResponseFields{
-			"id": product.ID,
-			"name": product.Name,
+			"id":          product.ID,
+			"name":        product.Name,
 			"description": product.Description,
-			"price": product.Price,
-			"imageUrl": product.ImageUrl,
+			"price":       product.Price,
+			"imageUrl":    product.ImageUrl,
 		})
 		productsResponse = append(productsResponse, formattedProductResponse)
 	}
@@ -87,7 +87,7 @@ func (pc *ProductControllerImpl) GetAllProducts (c *gin.Context) {
 	c.JSON(http.StatusCreated, productsResponse)
 }
 
-func (pc *ProductControllerImpl) GetProductById (c *gin.Context) {
+func (pc *ProductControllerImpl) GetProductById(c *gin.Context) {
 	idParam := c.Param("id")
 
 	id, err := strconv.ParseUint(idParam, 10, 64)
@@ -117,11 +117,11 @@ func (pc *ProductControllerImpl) GetProductById (c *gin.Context) {
 	}
 
 	response := utils.ConvertToResponse(product, utils.ResponseFields{
-		"id": product.ID,
-		"name": product.Name,
+		"id":          product.ID,
+		"name":        product.Name,
 		"description": product.Description,
-		"price": product.Price,
-		"imageUrl": product.ImageUrl,
+		"price":       product.Price,
+		"imageUrl":    product.ImageUrl,
 	})
 
 	c.JSON(http.StatusCreated, response)

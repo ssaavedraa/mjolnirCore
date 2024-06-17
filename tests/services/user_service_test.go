@@ -2,11 +2,11 @@ package tests
 
 import (
 	"errors"
-	"hex/cms/pkg/models"
-	"hex/cms/pkg/services"
-	config_mocks "hex/cms/tests/mocks/config"
-	interfaces_mocks "hex/cms/tests/mocks/interfaces"
-	repositories_mocks "hex/cms/tests/mocks/repositories"
+	"hex/mjolnir-core/pkg/models"
+	"hex/mjolnir-core/pkg/services"
+	config_mocks "hex/mjolnir-core/tests/mocks/config"
+	interfaces_mocks "hex/mjolnir-core/tests/mocks/interfaces"
+	repositories_mocks "hex/mjolnir-core/tests/mocks/repositories"
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -16,10 +16,10 @@ import (
 )
 
 type TestSetup struct {
-	mockRepo   *repositories_mocks.MockUserRepository
-	mockBcrypt *interfaces_mocks.MockBcryptInterface
-	mockJwt    *interfaces_mocks.MockJwtInterface
-	mockConfig *config_mocks.MockConfig
+	mockRepo    *repositories_mocks.MockUserRepository
+	mockBcrypt  *interfaces_mocks.MockBcryptInterface
+	mockJwt     *interfaces_mocks.MockJwtInterface
+	mockConfig  *config_mocks.MockConfig
 	userService services.UserService
 }
 
@@ -36,35 +36,35 @@ func setup(_ *testing.T) *TestSetup {
 	)
 
 	return &TestSetup{
-		mockRepo:   mockRepo,
-		mockBcrypt: mockBcrypt,
-		mockJwt:    mockJwt,
-		mockConfig: mockConfig,
+		mockRepo:    mockRepo,
+		mockBcrypt:  mockBcrypt,
+		mockJwt:     mockJwt,
+		mockConfig:  mockConfig,
 		userService: userService,
 	}
 }
 
-func TestCreateUser_Success (t *testing.T) {
+func TestCreateUser_Success(t *testing.T) {
 	ts := setup(t)
 
 	input := services.UserInput{
-		Email: "test@mail.com",
-		Password: "password",
-		Fullname: "Test Name",
+		Email:       "test@mail.com",
+		Password:    "password",
+		Fullname:    "Test Name",
 		PhoneNumber: "1234567890",
-		Address: "Test Address",
+		Address:     "Test Address",
 	}
 
 	ts.mockRepo.On(
 		"CreateUser",
 		mock.AnythingOfType("models.User"),
 	).Return(models.User{
-		Model: gorm.Model{ID: 1},
-		Email: input.Email,
-		Password: input.Password,
-		Fullname: input.Fullname,
+		Model:       gorm.Model{ID: 1},
+		Email:       input.Email,
+		Password:    input.Password,
+		Fullname:    input.Fullname,
 		PhoneNumber: input.PhoneNumber,
-		Address: input.Address,
+		Address:     input.Address,
 	}, nil)
 
 	ts.mockBcrypt.On(
@@ -83,15 +83,15 @@ func TestCreateUser_Success (t *testing.T) {
 	assert.Equal(t, "Test Address", createdUser.Address)
 }
 
-func TestCreateUser_DatabaseError (t *testing.T) {
+func TestCreateUser_DatabaseError(t *testing.T) {
 	ts := setup(t)
 
 	input := services.UserInput{
-		Email: "test@mail.com",
-		Password: "password",
-		Fullname: "Test Name",
+		Email:       "test@mail.com",
+		Password:    "password",
+		Fullname:    "Test Name",
 		PhoneNumber: "1234567890",
-		Address: "Test Address",
+		Address:     "Test Address",
 	}
 
 	ts.mockRepo.On(
@@ -114,16 +114,15 @@ func TestCreateUser_DatabaseError (t *testing.T) {
 	assert.ErrorContains(t, err, "Database error")
 }
 
-
-func TestCreateUser_BcryptError (t *testing.T) {
+func TestCreateUser_BcryptError(t *testing.T) {
 	ts := setup(t)
 
 	input := services.UserInput{
-		Email: "test@mail.com",
-		Password: "password",
-		Fullname: "Test Name",
+		Email:       "test@mail.com",
+		Password:    "password",
+		Fullname:    "Test Name",
 		PhoneNumber: "1234567890",
-		Address: "Test Address",
+		Address:     "Test Address",
 	}
 
 	ts.mockRepo.On(
@@ -138,7 +137,7 @@ func TestCreateUser_BcryptError (t *testing.T) {
 		"GenerateFromPassword",
 		[]byte("password"),
 		10,
-	).Return(nil , errors.New("Bcrypt error"))
+	).Return(nil, errors.New("Bcrypt error"))
 
 	_, err := ts.userService.CreateUser(input)
 
@@ -146,12 +145,12 @@ func TestCreateUser_BcryptError (t *testing.T) {
 	assert.ErrorContains(t, err, "Bcrypt error")
 }
 
-func TestLoginUser_Success (t *testing.T) {
+func TestLoginUser_Success(t *testing.T) {
 	ts := setup(t)
 	mockToken := new(interfaces_mocks.MockJwtTokenInterface)
 
 	credentials := services.UserCredentials{
-		Email: "test@mail.com",
+		Email:    "test@mail.com",
 		Password: "password",
 	}
 
@@ -159,8 +158,8 @@ func TestLoginUser_Success (t *testing.T) {
 		"GetUserByEmail",
 		credentials.Email,
 	).Return(models.User{
-		Model: gorm.Model{ID: 1},
-		Email: credentials.Email,
+		Model:    gorm.Model{ID: 1},
+		Email:    credentials.Email,
 		Password: "hashedPassword",
 	}, nil)
 
@@ -193,11 +192,11 @@ func TestLoginUser_Success (t *testing.T) {
 	assert.Equal(t, "tokenString", token)
 }
 
-func TestLoginUser_DatabaseError (t *testing.T) {
+func TestLoginUser_DatabaseError(t *testing.T) {
 	ts := setup(t)
 
 	credentials := services.UserCredentials{
-		Email: "test@mail.com",
+		Email:    "test@mail.com",
 		Password: "password",
 	}
 
@@ -212,11 +211,11 @@ func TestLoginUser_DatabaseError (t *testing.T) {
 	assert.ErrorContains(t, err, "Database error")
 }
 
-func TestLoginUser_PasswordMissmatch (t *testing.T) {
+func TestLoginUser_PasswordMissmatch(t *testing.T) {
 	ts := setup(t)
 
 	credentials := services.UserCredentials{
-		Email: "test@mail.com",
+		Email:    "test@mail.com",
 		Password: "password",
 	}
 
@@ -224,8 +223,8 @@ func TestLoginUser_PasswordMissmatch (t *testing.T) {
 		"GetUserByEmail",
 		credentials.Email,
 	).Return(models.User{
-		Model: gorm.Model{ID: 1},
-		Email: credentials.Email,
+		Model:    gorm.Model{ID: 1},
+		Email:    credentials.Email,
 		Password: "hashedPassword",
 	}, nil)
 
@@ -241,12 +240,12 @@ func TestLoginUser_PasswordMissmatch (t *testing.T) {
 	assert.ErrorContains(t, err, "Password missmatch")
 }
 
-func TestLoginUser_TokenError (t *testing.T) {
+func TestLoginUser_TokenError(t *testing.T) {
 	ts := setup(t)
 	mockToken := new(interfaces_mocks.MockJwtTokenInterface)
 
 	credentials := services.UserCredentials{
-		Email: "test@mail.com",
+		Email:    "test@mail.com",
 		Password: "password",
 	}
 
@@ -254,8 +253,8 @@ func TestLoginUser_TokenError (t *testing.T) {
 		"GetUserByEmail",
 		credentials.Email,
 	).Return(models.User{
-		Model: gorm.Model{ID: 1},
-		Email: credentials.Email,
+		Model:    gorm.Model{ID: 1},
+		Email:    credentials.Email,
 		Password: "hashedPassword",
 	}, nil)
 

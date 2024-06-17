@@ -5,12 +5,12 @@ dir: tests/mocks/{{ replaceAll .InterfaceDirRelative "pkg" ""}}
 outpkg: '{{.PackageName}}_mocks'
 filename: '{{.InterfaceName | snakecase }}_mock.go'
 packages:
-  hex/cms/pkg/interfaces:
+  hex/mjolnir-core/pkg/interfaces:
     config:
       recursive: true
-  hex/cms/pkg/repositories:
+  hex/mjolnir-core/pkg/repositories:
     config:
       recursive: true
-  hex/cms/pkg/config:
+  hex/mjolnir-core/pkg/config:
     config:
       recursive: true

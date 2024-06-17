@@ -3,7 +3,7 @@
 package interfaces_mocks
 
 import (
-	interfaces "hex/cms/pkg/interfaces"
+	interfaces "hex/mjolnir-core/pkg/interfaces"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 

@@ -1,10 +1,10 @@
 package services
 
 import (
-	"hex/cms/pkg/config"
-	"hex/cms/pkg/interfaces"
-	"hex/cms/pkg/models"
-	"hex/cms/pkg/repositories"
+	"hex/mjolnir-core/pkg/config"
+	"hex/mjolnir-core/pkg/interfaces"
+	"hex/mjolnir-core/pkg/models"
+	"hex/mjolnir-core/pkg/repositories"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

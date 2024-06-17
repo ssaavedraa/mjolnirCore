@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"hex/cms/internal_deprecated/model"
-	shiftService "hex/cms/internal_deprecated/service"
+	"hex/mjolnir-core/internal_deprecated/model"
+	shiftService "hex/mjolnir-core/internal_deprecated/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

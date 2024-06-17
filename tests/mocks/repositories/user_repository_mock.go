@@ -3,7 +3,7 @@
 package repositories_mocks
 
 import (
-	models "hex/cms/pkg/models"
+	models "hex/mjolnir-core/pkg/models"
 
 	mock "github.com/stretchr/testify/mock"
 )

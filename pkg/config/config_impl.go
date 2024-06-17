@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"hex/cms/pkg/models"
+	"hex/mjolnir-core/pkg/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

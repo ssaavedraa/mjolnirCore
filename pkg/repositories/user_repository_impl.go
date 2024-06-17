@@ -1,17 +1,17 @@
 package repositories
 
 import (
-	"hex/cms/pkg/config"
-	"hex/cms/pkg/models"
+	"hex/mjolnir-core/pkg/config"
+	"hex/mjolnir-core/pkg/models"
 )
 
 type UserRepositoryImpl struct{}
 
-func NewUserRepository () UserRepository {
+func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (repo *UserRepositoryImpl) CreateUser (user models.User) (models.User, error) {
+func (repo *UserRepositoryImpl) CreateUser(user models.User) (models.User, error) {
 	result := config.DB.Create(&user)
 
 	if result.Error != nil {
@@ -21,7 +21,7 @@ func (repo *UserRepositoryImpl) CreateUser (user models.User) (models.User, erro
 	return user, nil
 }
 
-func (repo *UserRepositoryImpl) GetUserByEmail (email string) (models.User, error) {
+func (repo *UserRepositoryImpl) GetUserByEmail(email string) (models.User, error) {
 	var user = models.User{}
 
 	result := config.DB.First(&user, "email = ?", email)

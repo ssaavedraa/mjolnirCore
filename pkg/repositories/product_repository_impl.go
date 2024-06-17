@@ -1,19 +1,19 @@
 package repositories
 
 import (
-	"hex/cms/pkg/config"
-	"hex/cms/pkg/models"
+	"hex/mjolnir-core/pkg/config"
+	"hex/mjolnir-core/pkg/models"
 
 	"gorm.io/gorm"
 )
 
-type ProductRepositoryImpl struct {}
+type ProductRepositoryImpl struct{}
 
-func NewProductRepository () ProductRepository {
+func NewProductRepository() ProductRepository {
 	return &ProductRepositoryImpl{}
 }
 
-func (repo *ProductRepositoryImpl) CreateProduct (product models.Product) (models.Product, error) {
+func (repo *ProductRepositoryImpl) CreateProduct(product models.Product) (models.Product, error) {
 	result := config.DB.Create(&product)
 
 	if result.Error != nil {
@@ -23,7 +23,7 @@ func (repo *ProductRepositoryImpl) CreateProduct (product models.Product) (model
 	return product, nil
 }
 
-func (repo *ProductRepositoryImpl) GetAllProducts () ([]models.Product, error) {
+func (repo *ProductRepositoryImpl) GetAllProducts() ([]models.Product, error) {
 	var products []models.Product
 	result := config.DB.Find(&products)
 
@@ -34,7 +34,7 @@ func (repo *ProductRepositoryImpl) GetAllProducts () ([]models.Product, error) {
 	return products, nil
 }
 
-func (repo *ProductRepositoryImpl) GetProductById (id uint) (models.Product, error) {
+func (repo *ProductRepositoryImpl) GetProductById(id uint) (models.Product, error) {
 	product := models.Product{
 		Model: gorm.Model{
 			ID: id,

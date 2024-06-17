@@ -1,8 +1,8 @@
 package api
 
 import (
-	"hex/cms/internal_deprecated/controller"
-	"hex/cms/internal_deprecated/middleware"
+	"hex/mjolnir-core/internal_deprecated/controller"
+	"hex/mjolnir-core/internal_deprecated/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +11,7 @@ func SetupRoutes(router *gin.Engine) {
 	// Email routes
 	router.POST("/email", middleware.Auth, SendEmailHandler)
 	// Shift routes
-	router.POST("/shifts/clock-in", middleware.Auth,  controller.ClockIn)
+	router.POST("/shifts/clock-in", middleware.Auth, controller.ClockIn)
 	router.POST("/shifts/clock-out", middleware.Auth, controller.ClockOut)
 	router.GET("/shifts", middleware.Auth, controller.GetAll)
 	// User routes

@@ -1,6 +1,6 @@
 package services
 
-import "hex/cms/pkg/models"
+import "hex/mjolnir-core/pkg/models"
 
 type UserInput struct {
 	Email       string `json:"email" binding:"required,email"`

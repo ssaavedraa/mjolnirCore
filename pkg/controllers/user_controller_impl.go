@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"hex/cms/pkg/services"
-	"hex/cms/pkg/utils"
-	"hex/cms/pkg/utils/logging"
+	"hex/mjolnir-core/pkg/services"
+	"hex/mjolnir-core/pkg/utils"
+	"hex/mjolnir-core/pkg/utils/logging"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"

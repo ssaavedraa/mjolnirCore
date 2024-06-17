@@ -3,11 +3,11 @@ package routes
 import (
 	"time"
 
-	"hex/cms/pkg/config"
-	"hex/cms/pkg/controllers"
-	"hex/cms/pkg/interfaces"
-	"hex/cms/pkg/repositories"
-	"hex/cms/pkg/services"
+	"hex/mjolnir-core/pkg/config"
+	"hex/mjolnir-core/pkg/controllers"
+	"hex/mjolnir-core/pkg/interfaces"
+	"hex/mjolnir-core/pkg/repositories"
+	"hex/mjolnir-core/pkg/services"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

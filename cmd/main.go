@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"hex/cms/pkg/config"
-	"hex/cms/pkg/routes"
-	utils "hex/cms/pkg/utils/wrappers"
+	"hex/mjolnir-core/pkg/config"
+	"hex/mjolnir-core/pkg/routes"
+	utils "hex/mjolnir-core/pkg/utils/wrappers"
 )
 
 func main() {

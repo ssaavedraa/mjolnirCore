@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"hex/cms/internal_deprecated/model"
+	"hex/mjolnir-core/internal_deprecated/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
