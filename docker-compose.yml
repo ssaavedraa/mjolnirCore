@@ -1,15 +1,55 @@
 version: '3.8'
 
+# Define named volumes for data persistence
 volumes:
-  hex-cms:
+  mjolnirCore:
+  kafka_data:
+  zookeeper_data:
 
 services:
-  hex-cms:
+  # Zookeeper service configuration
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181 # Zookeeper client port
+      ZOOKEEPER_TICK_TIME: 2000   # Zookeeper tick time
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper # Persistent storage for Zookeeper data
+
+  # Kafka service configuration
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    ports:
+      - 9092:9092 # Expose Kafka port on the host
+    depends_on:
+      - zookeeper # Ensure Zookeeper starts before Kafka
+    environment:
+      # Kafka advertised listeners for external and internal connections
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker-1:29092
+      KAFKA_BROKER_ID: 1 # Unique broker ID
+      # Define security protocols for listeners
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      # Replication factor for offsets topic (set to 2 for fault tolerance)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      # Zookeeper connection string
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - kafka_data:/var/lib/kafka/data # Persistent storage for Kafka data
+
+  # PostgreSQL database service configuration
+  mjolnirCore:
     image: postgres:13
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:5432 # Expose PostgreSQL port on the host (set via environment variable)
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-      TZ: Australia/Melbourne
+      POSTGRES_USER: ${DB_USER}     # PostgreSQL user (set via environment variable)
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # PostgreSQL password (set via environment variable)
+      POSTGRES_DB: ${DB_NAME}       # PostgreSQL database name (set via environment variable)
+      TZ: Australia/Melbourne       # Timezone configuration
+    volumes:
+      - mjolnirCore:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
+
+# Define a custom network for the services
+networks:
+  default:
+    name: my_custom_network
