@@ -14,6 +14,7 @@ import (
 )
 
 func SetupRouter(
+	kafkaProducer interfaces.KafkaProducerInterface,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
 	config config.Config,
@@ -21,17 +22,18 @@ func SetupRouter(
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{config.GetEnv("DOMAIN")},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
-		AllowCredentials: true,
+		AllowOrigins:     []string{config.GetEnv("DOMAIN")},
 		MaxAge:           12 * time.Hour,
+		AllowCredentials: true,
 	}))
 
-	userRepository := repositories.NewUserRepository()
 	productRepository := repositories.NewProductRepository()
+	userRepository := repositories.NewUserRepository()
 
 	userService := services.NewUserService(
+		kafkaProducer,
 		userRepository,
 		bcrypt,
 		jwt,

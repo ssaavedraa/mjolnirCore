@@ -16,6 +16,7 @@ import (
 )
 
 type TestSetup struct {
+	mockKafka   *interfaces_mocks.MockKafkaProducerInterface
 	mockRepo    *repositories_mocks.MockUserRepository
 	mockBcrypt  *interfaces_mocks.MockBcryptInterface
 	mockJwt     *interfaces_mocks.MockJwtInterface
@@ -24,11 +25,13 @@ type TestSetup struct {
 }
 
 func setup(_ *testing.T) *TestSetup {
-	mockRepo := new(repositories_mocks.MockUserRepository)
+	mockKafka := new(interfaces_mocks.MockKafkaProducerInterface)
 	mockBcrypt := new(interfaces_mocks.MockBcryptInterface)
+	mockRepo := new(repositories_mocks.MockUserRepository)
 	mockJwt := new(interfaces_mocks.MockJwtInterface)
 	mockConfig := new(config_mocks.MockConfig)
 	userService := services.NewUserService(
+		mockKafka,
 		mockRepo,
 		mockBcrypt,
 		mockJwt,
@@ -36,11 +39,12 @@ func setup(_ *testing.T) *TestSetup {
 	)
 
 	return &TestSetup{
-		mockRepo:    mockRepo,
-		mockBcrypt:  mockBcrypt,
-		mockJwt:     mockJwt,
-		mockConfig:  mockConfig,
 		userService: userService,
+		mockBcrypt:  mockBcrypt,
+		mockConfig:  mockConfig,
+		mockKafka:   mockKafka,
+		mockRepo:    mockRepo,
+		mockJwt:     mockJwt,
 	}
 }
 
@@ -73,6 +77,12 @@ func TestCreateUser_Success(t *testing.T) {
 		10,
 	).Return([]byte("hashedPassword"), nil)
 
+	ts.mockKafka.On(
+		"SendMessageToKafka",
+		"new_email",
+		mock.AnythingOfType("[]uint8"),
+	).Return(nil)
+
 	createdUser, err := ts.userService.CreateUser(input)
 
 	assert.NoError(t, err)
@@ -81,6 +91,47 @@ func TestCreateUser_Success(t *testing.T) {
 	assert.Equal(t, "Test Name", createdUser.Fullname)
 	assert.Equal(t, "1234567890", createdUser.PhoneNumber)
 	assert.Equal(t, "Test Address", createdUser.Address)
+}
+
+func TestCreateUser_KafkaError(t *testing.T) {
+	ts := setup(t)
+
+	input := services.UserInput{
+		Email:       "test@mail.com",
+		Password:    "password",
+		Fullname:    "Test Name",
+		PhoneNumber: "1234567890",
+		Address:     "Test Address",
+	}
+
+	ts.mockRepo.On(
+		"CreateUser",
+		mock.AnythingOfType("models.User"),
+	).Return(models.User{
+		Model:       gorm.Model{ID: 1},
+		Email:       input.Email,
+		Password:    input.Password,
+		Fullname:    input.Fullname,
+		PhoneNumber: input.PhoneNumber,
+		Address:     input.Address,
+	}, nil)
+
+	ts.mockBcrypt.On(
+		"GenerateFromPassword",
+		[]byte("password"),
+		10,
+	).Return([]byte("hashedPassword"), nil)
+
+	ts.mockKafka.On(
+		"SendMessageToKafka",
+		"new_email",
+		mock.AnythingOfType("[]uint8"),
+	).Return(errors.New("Kafka error"))
+
+	_, err := ts.userService.CreateUser(input)
+
+	assert.Error(t, err)
+	assert.ErrorContains(t, err, "Kafka error")
 }
 
 func TestCreateUser_DatabaseError(t *testing.T) {

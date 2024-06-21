@@ -1,10 +1,13 @@
 package services
 
 import (
+	"encoding/json"
 	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/interfaces"
 	"hex/mjolnir-core/pkg/models"
 	"hex/mjolnir-core/pkg/repositories"
+	"hex/mjolnir-core/pkg/utils"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,12 +15,14 @@ import (
 
 type UserServiceImpl struct {
 	UserRepository repositories.UserRepository
+	KafkaProducer  interfaces.KafkaProducerInterface
 	Bcrypt         interfaces.BcryptInterface
-	Jwt            interfaces.JwtInterface
 	Config         config.Config
+	Jwt            interfaces.JwtInterface
 }
 
 func NewUserService(
+	kafkaProducer interfaces.KafkaProducerInterface,
 	userRepository repositories.UserRepository,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
@@ -25,9 +30,10 @@ func NewUserService(
 ) UserService {
 	return &UserServiceImpl{
 		UserRepository: userRepository,
+		KafkaProducer:  kafkaProducer,
 		Bcrypt:         bcrypt,
-		Jwt:            jwt,
 		Config:         config,
+		Jwt:            jwt,
 	}
 }
 
@@ -39,15 +45,38 @@ func (us *UserServiceImpl) CreateUser(input UserInput) (models.User, error) {
 	}
 
 	user := models.User{
-		Email:       input.Email,
-		Password:    string(hash),
-		Fullname:    input.Fullname,
 		PhoneNumber: input.PhoneNumber,
-		Address:     input.Address,
 		CompanyID:   input.CompanyId,
+		Fullname:    input.Fullname,
+		Address:     input.Address,
+		Password:    string(hash),
+		Email:       input.Email,
 	}
 
 	createdUser, err := us.UserRepository.CreateUser(user)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	email := utils.Email{
+		TemplateData: map[string]string{
+			"RecipientName": strings.Split(createdUser.Fullname, " ")[0],
+		},
+		SenderAddress:   "invoices@santiagosaavedra.com.co",
+		ReceiverAddress: createdUser.Email,
+		TemplateName:    "user_invite_mvp",
+		Subject:         "Welcome to Hex",
+		Locale:          "es",
+	}
+
+	marshalledEmail, err := json.Marshal(email)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	err = us.KafkaProducer.SendMessageToKafka("new_email", marshalledEmail)
 
 	if err != nil {
 		return models.User{}, err
