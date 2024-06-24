@@ -29,37 +29,70 @@ type UserResponse struct {
 }
 
 func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
-	var userInput services.UserInput
+	creationMethod := c.Query("method")
 
-	if err := c.ShouldBindJSON(&userInput); err != nil {
-		logging.Error(err)
+	if creationMethod == "" {
+		var userInput services.UserInput
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request payload",
+		if err := c.ShouldBindJSON(&userInput); err != nil {
+			logging.Error(err)
+
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invalid request payload",
+			})
+
+			return
+		}
+
+		createdUser, err := uc.UserService.CreateUser(userInput, creationMethod)
+
+		if err != nil {
+			logging.Error(err)
+
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Failed to create user. Please try again later",
+			})
+
+			return
+		}
+
+		response := utils.ConvertToResponse(createdUser, utils.ResponseFields{
+			"id":        createdUser.ID,
+			"fullname":  createdUser.Fullname,
+			"companyId": createdUser.CompanyID,
 		})
 
+		c.JSON(http.StatusCreated, response)
 		return
 	}
 
-	createdUser, err := uc.UserService.CreateUser(userInput)
+	if creationMethod == "hex-invite" {
+		var userInvite services.UserInvite
 
-	if err != nil {
-		logging.Error(err)
+		if err := c.ShouldBindJSON(&userInvite); err != nil {
+			logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to create user. Please try again later",
-		})
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invalid request payload",
+			})
 
+			return
+		}
+
+		createdUser, err := uc.UserService.InviteUser(userInvite)
+
+		if err != nil {
+			logging.Error(err)
+
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Failed to invite user. Please try again later",
+			})
+			return
+		}
+
+		c.JSON(http.StatusCreated, createdUser)
 		return
 	}
-
-	response := utils.ConvertToResponse(createdUser, utils.ResponseFields{
-		"id":        createdUser.ID,
-		"fullname":  createdUser.Fullname,
-		"companyId": createdUser.CompanyID,
-	})
-
-	c.JSON(http.StatusCreated, response)
 }
 
 func (uc *UserControllerImpl) Login(c *gin.Context) {

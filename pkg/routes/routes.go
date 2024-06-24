@@ -30,10 +30,12 @@ func SetupRouter(
 	}))
 
 	productRepository := repositories.NewProductRepository()
+	companyRepository := repositories.NewCompanyRepository()
 	userRepository := repositories.NewUserRepository()
 
 	userService := services.NewUserService(
 		kafkaProducer,
+		companyRepository,
 		userRepository,
 		bcrypt,
 		jwt,

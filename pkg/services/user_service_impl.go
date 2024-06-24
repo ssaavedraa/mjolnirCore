@@ -14,30 +14,35 @@ import (
 )
 
 type UserServiceImpl struct {
-	UserRepository repositories.UserRepository
-	KafkaProducer  interfaces.KafkaProducerInterface
-	Bcrypt         interfaces.BcryptInterface
-	Config         config.Config
-	Jwt            interfaces.JwtInterface
+	UserRepository    repositories.UserRepository
+	CompanyRepository repositories.CompanyRepository
+	KafkaProducer     interfaces.KafkaProducerInterface
+	Bcrypt            interfaces.BcryptInterface
+	Config            config.Config
+	Jwt               interfaces.JwtInterface
 }
 
 func NewUserService(
 	kafkaProducer interfaces.KafkaProducerInterface,
+	companyRepository repositories.CompanyRepository,
 	userRepository repositories.UserRepository,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
 	config config.Config,
 ) UserService {
 	return &UserServiceImpl{
-		UserRepository: userRepository,
-		KafkaProducer:  kafkaProducer,
-		Bcrypt:         bcrypt,
-		Config:         config,
-		Jwt:            jwt,
+		CompanyRepository: companyRepository,
+		UserRepository:    userRepository,
+		KafkaProducer:     kafkaProducer,
+		Bcrypt:            bcrypt,
+		Config:            config,
+		Jwt:               jwt,
 	}
 }
 
-func (us *UserServiceImpl) CreateUser(input UserInput) (models.User, error) {
+func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (models.User, error) {
+	emailTemplate := getEmailTemplateId(creationMethod)
+
 	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 
 	if err != nil {
@@ -51,6 +56,11 @@ func (us *UserServiceImpl) CreateUser(input UserInput) (models.User, error) {
 		Address:     input.Address,
 		Password:    string(hash),
 		Email:       input.Email,
+		IsDraft:     creationMethod == "hex-invite",
+	}
+
+	if creationMethod == "hex-invite" {
+		user.Password = ""
 	}
 
 	createdUser, err := us.UserRepository.CreateUser(user)
@@ -65,9 +75,9 @@ func (us *UserServiceImpl) CreateUser(input UserInput) (models.User, error) {
 		},
 		SenderAddress:   "invoices@santiagosaavedra.com.co",
 		ReceiverAddress: createdUser.Email,
-		TemplateName:    "user_invite_mvp",
+		TemplateName:    emailTemplate,
 		Subject:         "Welcome to Hex",
-		Locale:          "es",
+		Locale:          "en",
 	}
 
 	marshalledEmail, err := json.Marshal(email)
@@ -116,4 +126,35 @@ func (us *UserServiceImpl) Login(credentials UserCredentials) (models.User, stri
 	}
 
 	return user, tokenString, nil
+}
+
+func (us *UserServiceImpl) InviteUser(invite UserInvite) (models.User, error) {
+	company, err := us.CompanyRepository.FindByNameOrCreate(invite.CompanyName)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user := UserInput{
+		CompanyId: company.ID,
+		Email:     invite.Email,
+		Fullname:  invite.Fullname,
+	}
+
+	createdUser, err := us.CreateUser(user, "hex-invite")
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return createdUser, nil
+}
+
+func getEmailTemplateId(creationMethod string) string {
+	switch creationMethod {
+	case "hex-invite":
+		return "user_invite_mvp"
+	default:
+		return "user_created"
+	}
 }
