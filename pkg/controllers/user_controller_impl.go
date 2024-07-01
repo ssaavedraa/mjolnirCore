@@ -128,10 +128,10 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 	}
 
 	response := utils.ConvertToResponse(user, utils.ResponseFields{
-		"id":        user.ID,
-		"name":      user.Fullname,
-		"companyId": user.CompanyID,
-		"token":     token,
+		"id":          user.ID,
+		"name":        user.Fullname,
+		"companyId":   user.CompanyID,
+		"accessToken": token,
 	})
 
 	c.JSON(http.StatusCreated, response)

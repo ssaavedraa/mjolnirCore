@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/models"
 )
@@ -16,8 +15,6 @@ func (repo *CompanyRepositoryImpl) FindByNameOrCreate(name string) (models.Compa
 	var company = models.Company{
 		Name: name,
 	}
-
-	fmt.Printf("companyRepository - company: %+v", company)
 
 	result := config.DB.Where("name = ?", name).FirstOrCreate(&company)
 

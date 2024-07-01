@@ -10,7 +10,8 @@ type User struct {
 	PhoneNumber string
 	Address     string
 	CompanyRole string
-	IsDraft     bool
+	IsDraft     bool   `gorm:"default:false"`
+	InviteId    string `gorm:"default:null"`
 
 	CompanyID uint
 	Shifts    []Shift   `gorm:"foreignKey:UserID"`

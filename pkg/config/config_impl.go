@@ -63,6 +63,12 @@ func (c *ConfigImpl) LoadConfig() {
 		&models.Product{},
 	)
 
+	// Drop the automatically created unique index
+	DB.Exec("DROP INDEX IF EXISTS idx_companies_nit;")
+
+	// Create the partial unique index using raw SQL
+	DB.Exec("CREATE UNIQUE INDEX idx_companies_nit ON companies (nit) WHERE nit IS NOT NULL;")
+
 	if err != nil {
 		log.Fatalf("Error migrating database: %v", err)
 	}

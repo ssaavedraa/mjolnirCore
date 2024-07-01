@@ -61,6 +61,7 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 
 	if creationMethod == "hex-invite" {
 		user.Password = ""
+		user.InviteId = utils.GenerateId()
 	}
 
 	createdUser, err := us.UserRepository.CreateUser(user)
@@ -72,6 +73,7 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 	email := utils.Email{
 		TemplateData: map[string]string{
 			"RecipientName": strings.Split(createdUser.Fullname, " ")[0],
+			"InviteId":      createdUser.InviteId,
 		},
 		SenderAddress:   "invoices@santiagosaavedra.com.co",
 		ReceiverAddress: createdUser.Email,
