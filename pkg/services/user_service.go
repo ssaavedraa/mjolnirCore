@@ -26,4 +26,5 @@ type UserService interface {
 	CreateUser(input UserInput, creationMethod string) (models.User, error)
 	Login(credentials UserCredentials) (models.User, string, error)
 	InviteUser(invite UserInvite) (models.User, error)
+	GetByInviteId(inviteId string) (models.User, error)
 }

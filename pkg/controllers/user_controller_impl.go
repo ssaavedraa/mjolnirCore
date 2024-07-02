@@ -136,3 +136,35 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response)
 }
+
+func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
+	inviteIdParam := c.Param("inviteId")
+
+	user, err := uc.UserService.GetByInviteId(inviteIdParam)
+
+	if err != nil {
+		logging.Error(err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to find user by invite id. Please try again later",
+		})
+		return
+	}
+
+	response := utils.ConvertToResponse(user, utils.ResponseFields{
+		"email":       user.Email,
+		"fullname":    user.Fullname,
+		"phoneNumber": user.PhoneNumber,
+		"address":     user.Address,
+		"companyRole": user.CompanyRole,
+		"company": utils.ResponseFields{
+			"name":        user.Company.Name,
+			"domain":      user.Company.Domain,
+			"nit":         user.Company.Nit,
+			"address":     user.Company.Address,
+			"phoneNumber": user.Company.PhoneNumber,
+		},
+	})
+
+	c.JSON(http.StatusOK, response)
+}

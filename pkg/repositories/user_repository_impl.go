@@ -32,3 +32,15 @@ func (repo *UserRepositoryImpl) GetUserByEmail(email string) (models.User, error
 
 	return user, nil
 }
+
+func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (models.User, error) {
+	var user = models.User{}
+
+	result := config.DB.Preload("Company").Where("invite_id = ?", inviteId).First(&user)
+
+	if result.Error != nil {
+		return user, result.Error
+	}
+
+	return user, nil
+}

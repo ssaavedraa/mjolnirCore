@@ -152,6 +152,16 @@ func (us *UserServiceImpl) InviteUser(invite UserInvite) (models.User, error) {
 	return createdUser, nil
 }
 
+func (us *UserServiceImpl) GetByInviteId(inviteId string) (models.User, error) {
+	user, err := us.UserRepository.GetByInviteId(inviteId)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
 func getEmailTemplateId(creationMethod string) string {
 	switch creationMethod {
 	case "hex-invite":
