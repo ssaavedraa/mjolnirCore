@@ -23,11 +23,6 @@ func NewUserController(userService services.UserService) UserController {
 	}
 }
 
-type UserResponse struct {
-	ID       uint `json:"id"`
-	Fullname uint `json:"fullname"`
-}
-
 func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 	creationMethod := c.Query("method")
 
@@ -63,7 +58,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 		})
 
 		c.JSON(http.StatusCreated, response)
-		return
 	}
 
 	if creationMethod == "hex-invite" {
@@ -91,7 +85,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusNoContent, nil)
-		return
 	}
 }
 

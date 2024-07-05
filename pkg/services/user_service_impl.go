@@ -181,6 +181,7 @@ func (us *UserServiceImpl) UpdateDraftUser(input OptionalUserInput) (models.User
 		Address:     input.Address,
 		CompanyRole: input.CompanyRole,
 		CompanyID:   input.CompanyId,
+		IsDraft:     false,
 	}
 
 	updatedUser, err := us.UserRepository.Update(user)

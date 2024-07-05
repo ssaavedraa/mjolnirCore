@@ -47,7 +47,6 @@ func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (models.User, err
 
 func (repo *UserRepositoryImpl) Update(user models.User) (models.User, error) {
 	var existingUser models.User
-	user.IsDraft = false
 
 	existingUserResult := config.DB.First(&existingUser, user.ID)
 

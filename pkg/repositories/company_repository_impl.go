@@ -24,3 +24,21 @@ func (repo *CompanyRepositoryImpl) FindByNameOrCreate(name string) (models.Compa
 
 	return company, nil
 }
+
+func (repo *CompanyRepositoryImpl) Update(company models.Company) (models.Company, error) {
+	var existingCompany models.Company
+
+	existingCompanyResult := config.DB.First(&existingCompany, company.ID)
+
+	if existingCompanyResult.Error != nil {
+		return existingCompany, existingCompanyResult.Error
+	}
+
+	updatedCompanyResult := config.DB.Model(&existingCompany).Updates(company)
+
+	if updatedCompanyResult.Error != nil {
+		return existingCompany, updatedCompanyResult.Error
+	}
+
+	return company, nil
+}

@@ -41,11 +41,15 @@ func SetupRouter(
 		jwt,
 		config,
 	)
+	companyService := services.NewCompanyService(
+		companyRepository,
+	)
 	productService := services.NewProductService(
 		productRepository,
 	)
 
 	userController := controllers.NewUserController(userService)
+	companyController := controllers.NewCompanyController(companyService)
 	productController := controllers.NewProductController(productService)
 
 	api := r.Group("/api")
@@ -57,6 +61,12 @@ func SetupRouter(
 		userApi.POST("/login", userController.Login)
 		userApi.GET("/:inviteId", userController.GetByInviteId)
 		userApi.PUT("", userController.UpdateDraftUser)
+	}
+
+	companyApi := api.Group("/companies")
+
+	{
+		companyApi.PUT("", companyController.UpdateDraftCompany)
 	}
 
 	productApi := api.Group("/products")
