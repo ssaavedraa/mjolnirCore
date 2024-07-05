@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 )
 
 type UserServiceImpl struct {
@@ -160,6 +161,35 @@ func (us *UserServiceImpl) GetByInviteId(inviteId string) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (us *UserServiceImpl) UpdateDraftUser(input OptionalUserInput) (models.User, error) {
+	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user := models.User{
+		Model: gorm.Model{
+			ID: input.Id,
+		},
+		Email:       input.Email,
+		Password:    string(hash),
+		Fullname:    input.Fullname,
+		PhoneNumber: input.PhoneNumber,
+		Address:     input.Address,
+		CompanyRole: input.CompanyRole,
+		CompanyID:   input.CompanyId,
+	}
+
+	updatedUser, err := us.UserRepository.Update(user)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return updatedUser, nil
 }
 
 func getEmailTemplateId(creationMethod string) string {

@@ -79,7 +79,7 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 			return
 		}
 
-		createdUser, err := uc.UserService.InviteUser(userInvite)
+		_, err := uc.UserService.InviteUser(userInvite)
 
 		if err != nil {
 			logging.Error(err)
@@ -90,7 +90,7 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusCreated, createdUser)
+		c.JSON(http.StatusNoContent, nil)
 		return
 	}
 }
@@ -152,12 +152,14 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 	}
 
 	response := utils.ConvertToResponse(user, utils.ResponseFields{
+		"id":          user.ID,
 		"email":       user.Email,
 		"fullname":    user.Fullname,
 		"phoneNumber": user.PhoneNumber,
 		"address":     user.Address,
 		"companyRole": user.CompanyRole,
 		"company": utils.ResponseFields{
+			"id":          user.CompanyID,
 			"name":        user.Company.Name,
 			"domain":      user.Company.Domain,
 			"nit":         user.Company.Nit,
@@ -167,4 +169,31 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (uc *UserControllerImpl) UpdateDraftUser(c *gin.Context) {
+	var userInput services.OptionalUserInput
+
+	if err := c.ShouldBindJSON(&userInput); err != nil {
+		logging.Error(err)
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request payload",
+		})
+
+		return
+	}
+
+	_, err := uc.UserService.UpdateDraftUser(userInput)
+
+	if err != nil {
+		logging.Error(err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to update user. Please try again later",
+		})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

@@ -9,6 +9,18 @@ type UserInput struct {
 	PhoneNumber string `json:"phoneNumber" binding:"required"`
 	Address     string `json:"address" binding:"required"`
 	CompanyId   uint   `json:"companyId" binding:"required"`
+	CompanyRole string `json:"companyRole" binding:"required"`
+}
+
+type OptionalUserInput struct {
+	Id          uint   `json:"id"`
+	Email       string `json:"email" binding:"email"`
+	Password    string `json:"password"`
+	Fullname    string `json:"fullname"`
+	PhoneNumber string `json:"phoneNumber"`
+	Address     string `json:"address"`
+	CompanyId   uint   `json:"companyId"`
+	CompanyRole string `json:"companyRole"`
 }
 
 type UserInvite struct {
@@ -27,4 +39,5 @@ type UserService interface {
 	Login(credentials UserCredentials) (models.User, string, error)
 	InviteUser(invite UserInvite) (models.User, error)
 	GetByInviteId(inviteId string) (models.User, error)
+	UpdateDraftUser(input OptionalUserInput) (models.User, error)
 }

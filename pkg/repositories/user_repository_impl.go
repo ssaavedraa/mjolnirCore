@@ -44,3 +44,22 @@ func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (models.User, err
 
 	return user, nil
 }
+
+func (repo *UserRepositoryImpl) Update(user models.User) (models.User, error) {
+	var existingUser models.User
+	user.IsDraft = false
+
+	existingUserResult := config.DB.First(&existingUser, user.ID)
+
+	if existingUserResult.Error != nil {
+		return existingUser, existingUserResult.Error
+	}
+
+	updatedUserResult := config.DB.Model(&existingUser).Updates(user)
+
+	if updatedUserResult.Error != nil {
+		return models.User{}, updatedUserResult.Error
+	}
+
+	return user, nil
+}
