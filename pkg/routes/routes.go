@@ -14,6 +14,7 @@ import (
 )
 
 func SetupRouter(
+	kafkaProducer interfaces.KafkaProducerInterface,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
 	config config.Config,
@@ -21,27 +22,34 @@ func SetupRouter(
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{config.GetEnv("DOMAIN")},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
-		AllowCredentials: true,
+		AllowOrigins:     []string{config.GetEnv("DOMAIN")},
 		MaxAge:           12 * time.Hour,
+		AllowCredentials: true,
 	}))
 
-	userRepository := repositories.NewUserRepository()
 	productRepository := repositories.NewProductRepository()
+	companyRepository := repositories.NewCompanyRepository()
+	userRepository := repositories.NewUserRepository()
 
 	userService := services.NewUserService(
+		kafkaProducer,
+		companyRepository,
 		userRepository,
 		bcrypt,
 		jwt,
 		config,
+	)
+	companyService := services.NewCompanyService(
+		companyRepository,
 	)
 	productService := services.NewProductService(
 		productRepository,
 	)
 
 	userController := controllers.NewUserController(userService)
+	companyController := controllers.NewCompanyController(companyService)
 	productController := controllers.NewProductController(productService)
 
 	api := r.Group("/api")
@@ -51,6 +59,14 @@ func SetupRouter(
 	{
 		userApi.POST("", userController.CreateUser)
 		userApi.POST("/login", userController.Login)
+		userApi.GET("/:inviteId", userController.GetByInviteId)
+		userApi.PUT("", userController.UpdateDraftUser)
+	}
+
+	companyApi := api.Group("/companies")
+
+	{
+		companyApi.PUT("", companyController.UpdateDraftCompany)
 	}
 
 	productApi := api.Group("/products")
