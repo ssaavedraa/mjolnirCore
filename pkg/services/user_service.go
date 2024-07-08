@@ -14,7 +14,7 @@ type UserInput struct {
 
 type OptionalUserInput struct {
 	Id          uint   `json:"id"`
-	Email       string `json:"email" binding:"email"`
+	Email       string `json:"email"`
 	Password    string `json:"password"`
 	Fullname    string `json:"fullname"`
 	PhoneNumber string `json:"phoneNumber"`
