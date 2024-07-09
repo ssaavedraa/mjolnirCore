@@ -44,6 +44,8 @@ func (c *ConfigImpl) LoadConfig() {
 		c.GetEnv("DB_PORT"),
 	)
 
+	fmt.Printf("dsn: %+v", dsn)
+
 	DbInstance, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
