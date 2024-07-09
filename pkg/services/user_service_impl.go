@@ -71,28 +71,31 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		return models.User{}, err
 	}
 
-	email := interfaces.Email{
-		TemplateData: map[string]string{
-			"RecipientName": strings.Split(createdUser.Fullname, " ")[0],
-			"InviteId":      createdUser.InviteId,
-		},
-		SenderAddress:   "invoices@santiagosaavedra.com.co",
-		ReceiverAddress: createdUser.Email,
-		TemplateName:    emailTemplate,
-		Subject:         "Welcome to Hex",
-		Locale:          "en",
-	}
+	if creationMethod == "hex-invite" {
 
-	_, err = json.Marshal(email)
+		email := interfaces.Email{
+			TemplateData: map[string]string{
+				"RecipientName": strings.Split(createdUser.Fullname, " ")[0],
+				"InviteId":      createdUser.InviteId,
+			},
+			SenderAddress:   "invoices@santiagosaavedra.com.co",
+			ReceiverAddress: createdUser.Email,
+			TemplateName:    emailTemplate,
+			Subject:         "Welcome to Hex",
+			Locale:          "en",
+		}
 
-	if err != nil {
-		return models.User{}, err
-	}
+		_, err = json.Marshal(email)
 
-	err = us.EmailSender.Send(email)
+		if err != nil {
+			return models.User{}, err
+		}
 
-	if err != nil {
-		return models.User{}, err
+		err = us.EmailSender.Send(email)
+
+		if err != nil {
+			return models.User{}, err
+		}
 	}
 
 	return createdUser, nil
