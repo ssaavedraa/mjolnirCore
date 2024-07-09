@@ -14,9 +14,10 @@ import (
 
 func main() {
 	kafkaproducer := utils.NewKafkaProducer()
+	kafkaBroker := os.Getenv("KAFKA_BROKER")
 	log.Printf("KafkaProducer: %+v", kafkaproducer)
 
-	err := kafkaproducer.InitKafkaProducer([]string{"localhost:9092"})
+	err := kafkaproducer.InitKafkaProducer([]string{kafkaBroker})
 	if err != nil {
 		log.Fatalf("Failed to initialize Kafka producer: %v", err)
 	}
