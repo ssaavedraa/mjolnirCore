@@ -17,27 +17,27 @@ import (
 type UserServiceImpl struct {
 	UserRepository    repositories.UserRepository
 	CompanyRepository repositories.CompanyRepository
-	KafkaProducer     interfaces.KafkaProducerInterface
 	Bcrypt            interfaces.BcryptInterface
 	Config            config.Config
 	Jwt               interfaces.JwtInterface
+	EmailSender       interfaces.EmailSender
 }
 
 func NewUserService(
-	kafkaProducer interfaces.KafkaProducerInterface,
 	companyRepository repositories.CompanyRepository,
 	userRepository repositories.UserRepository,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
 	config config.Config,
+	emailSender interfaces.EmailSender,
 ) UserService {
 	return &UserServiceImpl{
 		CompanyRepository: companyRepository,
 		UserRepository:    userRepository,
-		KafkaProducer:     kafkaProducer,
 		Bcrypt:            bcrypt,
 		Config:            config,
 		Jwt:               jwt,
+		EmailSender:       emailSender,
 	}
 }
 
@@ -71,7 +71,7 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		return models.User{}, err
 	}
 
-	email := utils.Email{
+	email := interfaces.Email{
 		TemplateData: map[string]string{
 			"RecipientName": strings.Split(createdUser.Fullname, " ")[0],
 			"InviteId":      createdUser.InviteId,
@@ -83,13 +83,13 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		Locale:          "en",
 	}
 
-	marshalledEmail, err := json.Marshal(email)
+	_, err = json.Marshal(email)
 
 	if err != nil {
 		return models.User{}, err
 	}
 
-	err = us.KafkaProducer.SendMessageToKafka("new_email", marshalledEmail)
+	err = us.EmailSender.Send(email)
 
 	if err != nil {
 		return models.User{}, err

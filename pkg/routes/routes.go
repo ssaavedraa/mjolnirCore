@@ -8,13 +8,13 @@ import (
 	"hex/mjolnir-core/pkg/interfaces"
 	"hex/mjolnir-core/pkg/repositories"
 	"hex/mjolnir-core/pkg/services"
+	"hex/mjolnir-core/pkg/utils"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(
-	kafkaProducer interfaces.KafkaProducerInterface,
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
 	config config.Config,
@@ -29,17 +29,19 @@ func SetupRouter(
 		AllowCredentials: true,
 	}))
 
+	emailSender := utils.NewEmailSender(config)
+
 	productRepository := repositories.NewProductRepository()
 	companyRepository := repositories.NewCompanyRepository()
 	userRepository := repositories.NewUserRepository()
 
 	userService := services.NewUserService(
-		kafkaProducer,
 		companyRepository,
 		userRepository,
 		bcrypt,
 		jwt,
 		config,
+		emailSender,
 	)
 	companyService := services.NewCompanyService(
 		companyRepository,

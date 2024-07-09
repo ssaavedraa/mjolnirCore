@@ -13,7 +13,7 @@ services:
     image: confluentinc/cp-zookeeper:7.3.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181 # Zookeeper client port
-      ZOOKEEPER_TICK_TIME: 2000   # Zookeeper tick time
+      ZOOKEEPER_TICK_TIME: 2000 # Zookeeper tick time
     volumes:
       - zookeeper_data:/var/lib/zookeeper # Persistent storage for Zookeeper data
 
@@ -32,7 +32,7 @@ services:
       # Define security protocols for listeners
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       # Kafka advertised listeners for external and internal connections
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker-1:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_BROKER},PLAINTEXT_INTERNAL://broker-1:29092
       # Replication factor for offsets topic (set to 2 for fault tolerance)
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
@@ -45,10 +45,10 @@ services:
     ports:
       - ${DB_PORT}:5432 # Expose PostgreSQL port on the host (set via environment variable)
     environment:
-      POSTGRES_USER: ${DB_USER}     # PostgreSQL user (set via environment variable)
+      POSTGRES_USER: ${DB_USER} # PostgreSQL user (set via environment variable)
       POSTGRES_PASSWORD: ${DB_PASSWORD} # PostgreSQL password (set via environment variable)
-      POSTGRES_DB: ${DB_NAME}       # PostgreSQL database name (set via environment variable)
-      TZ: Australia/Melbourne       # Timezone configuration
+      POSTGRES_DB: ${DB_NAME} # PostgreSQL database name (set via environment variable)
+      TZ: Australia/Melbourne # Timezone configuration
     volumes:
       - mjolnirCore:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
 

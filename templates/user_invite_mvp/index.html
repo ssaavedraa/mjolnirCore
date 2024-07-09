@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="{{.Lang}}">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        @media (prefers-color-scheme: dark) {
+
+            .email-container,
+            body,
+            html {
+                background-color: #190d63 !important;
+                width: 100%;
+            }
+
+            p,
+            li {
+                color: #fee9ff !important;
+            }
+
+            a {
+                color: #190d63 !important;
+                background-color: #cc69f8 !important;
+            }
+
+            a.image-link {
+                background-color: transparent !important;
+            }
+        }
+    </style>
+    <title>{{.Subject}}</title>
+</head>
+
+<body
+    style='background-color: #190d63; max-width: 90%; height: 100%; box-sizing: content-box; margin: auto; display: flex;'>
+    <div
+        style="background-color: #190d63 !important; color: #fee9ff; font-family: 'Onest', system-ui !important; padding: 20px; width: 100%;">
+        <table class="email-container"
+            style="max-width: 800px; margin: 0 auto; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); background-color: #270f6e !important; border-radius: 1.5rem; font-family: 'Onest', system-ui;">
+            <tr>
+                <td style="text-align: center; height: 30px">
+                    <a href="https://hex.santiagosaavedra.com.co"
+                        style="text-decoration: none; display: block; height: 8vh; font-family: 'Onest', system-ui; color: #fee9ff;"
+                        class='image-link'>
+                        <img src="https://s3.amazonaws.com/hex.co/hex-isologo.png" alt="hex-isologo"
+                            style="height: 100%; display: block; margin: auto;" />
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">
+                    <h2 style="color: #cc69f8; font-size: 24px">{{.WelcomeMessage}}</h2>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 20px; padding-bottom: 0">
+                    <p style="font-size: 16px; line-height: 1.6;">{{.Greeting}} {{.RecipientName}}</p>
+                    <p style="font-size: 16px; line-height: 1.6;">{{.Intro}}</p>
+                    <p style="font-size: 16px; line-height: 1.6;">{{.Participation}}</p>
+                    <p style="font-size: 16px; line-height: 1.6;">{{.Expectations}}</p>
+                    <ul style="font-size: 16px; line-height: 1.6;">
+                        <li>{{.Benefit1}}</li>
+                        <li>{{.Benefit2}}</li>
+                        <li>{{.Benefit3}}</li>
+                        <li>{{.Benefit4}}</li>
+                    </ul>
+                    <p style="font-size: 16px; line-height: 1.6;">{{.ReachOut}}</p>
+                    <p style="font-size: 16px; line-height: 1.6;">{{.WelcomeAboard}}</p>
+                    <p style="font-size: 16px; line-height: 1.6; margin-top: 20px;">{{.BestRegards}}</p>
+                    <p style="font-size: 16px; line-height: 1.6; font-weight: bold;">
+                        {{.Founders}}<br />{{.FoundersTitle}}</p>
+                </td>
+            </tr>
+            <tr style="text-align: center">
+                <td>
+                    <p style="font-size: 16px; line-height: 1.6;">
+                        <a href="https://hex.santiagosaavedra.com.co/auth/signup?method=invite&invite-id={{.InviteId}}"
+                            style="text-decoration: none; background-color: #cc69f8; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 30%; color: #0d0830;">{{.JoinUs}}</a>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
