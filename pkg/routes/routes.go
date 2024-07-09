@@ -24,7 +24,7 @@ func SetupRouter(
 	r.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
-		AllowOrigins:     []string{config.GetEnv("DOMAIN")},
+		AllowOrigins:     []string{config.GetEnv("FRONTEND_DOMAIN")},
 		MaxAge:           12 * time.Hour,
 		AllowCredentials: true,
 	}))
