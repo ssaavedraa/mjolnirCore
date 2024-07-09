@@ -35,7 +35,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN GOOS=linux GOARCH=amd64 go build -tags musl -o /app/out ./cmd
-FROM scratch
+FROM alpine:latest
 WORKDIR /app
 COPY --from=build /app/out /app/out
 CMD ["/app/out"]
