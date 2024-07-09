@@ -140,7 +140,7 @@ func (es *EmailSenderImpl) getLocalizationKeys(templateName string) (map[string]
 		return templateFields, nil
 
 	default:
-		return map[string]string{}, errors.New("Invalid email template")
+		return map[string]string{}, errors.New("invalid email template")
 	}
 }
 
