@@ -27,29 +27,15 @@ ARG RAILWAY_PROJECT_ID
 ARG RAILWAY_ENVIRONMENT_ID
 ARG RAILWAY_SERVICE_ID
 
-# Set the working directory inside the container
-WORKDIR /app
+RUN apk add alpine-sdk
+RUN apk --update add git
 
-# Copy the Go module files
+WORKDIR /app
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
-
-# Copy the entire project directory into the container
 COPY . .
-
-# Build the Go app
-RUN go build -o /app/out ./cmd
-
-# Start a new stage from scratch
-FROM alpine:latest
-
-# Set the working directory inside the container
+RUN GOOS=linux GOARCH=amd64 go build -tags musl -o /app/out ./cmd
+FROM scratch
 WORKDIR /app
-
-# Copy the pre-built binary file from the previous stage
 COPY --from=build /app/out /app/out
-
-# Command to run the executable
 CMD ["/app/out"]
