@@ -57,10 +57,8 @@ func (c *ConfigImpl) LoadConfig() {
 	err = DB.AutoMigrate(
 		&models.User{},
 		&models.Company{},
-		&models.Invoice{},
-		&models.Shift{},
-		&models.InvoiceItem{},
 		&models.Product{},
+		&models.Team{},
 	)
 
 	// Drop the automatically created unique index

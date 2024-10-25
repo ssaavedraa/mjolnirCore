@@ -34,6 +34,7 @@ func SetupRouter(
 	productRepository := repositories.NewProductRepository()
 	companyRepository := repositories.NewCompanyRepository()
 	userRepository := repositories.NewUserRepository()
+	teamRepository := repositories.NewTeamRepository()
 
 	userService := services.NewUserService(
 		companyRepository,
@@ -49,10 +50,14 @@ func SetupRouter(
 	productService := services.NewProductService(
 		productRepository,
 	)
+	teamService := services.NewTeamService(
+		teamRepository,
+	)
 
 	userController := controllers.NewUserController(userService)
 	companyController := controllers.NewCompanyController(companyService)
 	productController := controllers.NewProductController(productService)
+	teamController := controllers.NewTeamController(teamService)
 
 	api := r.Group("/api")
 
@@ -77,6 +82,13 @@ func SetupRouter(
 		productApi.POST("", productController.CreateProduct)
 		productApi.GET("", productController.GetAllProducts)
 		productApi.GET("/:id", productController.GetProductById)
+	}
+
+	teamApi := api.Group("/teams")
+
+	{
+		teamApi.GET("/:companyId", teamController.GetTeams)
+		teamApi.GET("/:companyId/:teamName", teamController.GetTeamMembers)
 	}
 
 	return r
