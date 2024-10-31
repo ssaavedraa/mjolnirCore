@@ -166,7 +166,7 @@ func (us *UserServiceImpl) GetByInviteId(inviteId string) (models.User, error) {
 	return user, nil
 }
 
-func (us *UserServiceImpl) UpdateDraftUser(input OptionalUserInput) (models.User, error) {
+func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (models.User, error) {
 	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 
 	if err != nil {

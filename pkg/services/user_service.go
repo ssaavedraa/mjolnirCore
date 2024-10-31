@@ -39,5 +39,5 @@ type UserService interface {
 	Login(credentials UserCredentials) (models.User, string, error)
 	InviteUser(invite UserInvite) (models.User, error)
 	GetByInviteId(inviteId string) (models.User, error)
-	UpdateDraftUser(input OptionalUserInput) (models.User, error)
+	UpdateUser(input OptionalUserInput) (models.User, error)
 }

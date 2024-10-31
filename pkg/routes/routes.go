@@ -66,14 +66,14 @@ func SetupRouter(
 	{
 		userApi.POST("", userController.CreateUser)
 		userApi.POST("/login", userController.Login)
-		userApi.GET("/:inviteId", userController.GetByInviteId)
-		userApi.PUT("", userController.UpdateDraftUser)
+		userApi.GET("invite/:inviteId", userController.GetByInviteId)
+		userApi.PUT("/:id", userController.UpdateUser)
 	}
 
 	companyApi := api.Group("/companies")
 
 	{
-		companyApi.PUT("", companyController.UpdateDraftCompany)
+		companyApi.PUT("", companyController.UpdateCompany)
 	}
 
 	productApi := api.Group("/products")
@@ -84,11 +84,11 @@ func SetupRouter(
 		productApi.GET("/:id", productController.GetProductById)
 	}
 
-	teamApi := api.Group("/teams")
+	teamApi := api.Group("/companies/:companyId/teams")
 
 	{
-		teamApi.GET("/:companyId", teamController.GetTeams)
-		teamApi.GET("/:companyId/:teamName", teamController.GetTeamMembers)
+		teamApi.GET("/", teamController.GetTeams)
+		teamApi.GET("/:teamId/members", teamController.GetTeamMembers)
 	}
 
 	return r

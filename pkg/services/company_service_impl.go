@@ -19,7 +19,7 @@ func NewCompanyService(
 	}
 }
 
-func (cs *CompanyServiceImpl) UpdateDraftCompany(input OptionalCompanyInput) (models.Company, error) {
+func (cs *CompanyServiceImpl) UpdateCompany(input OptionalCompanyInput) (models.Company, error) {
 	company := models.Company{
 		Model: gorm.Model{
 			ID: input.Id,

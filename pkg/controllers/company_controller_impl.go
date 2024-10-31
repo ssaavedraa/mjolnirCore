@@ -20,7 +20,7 @@ func NewCompanyController(
 	}
 }
 
-func (cc *CompanyControllerImpl) UpdateDraftCompany(c *gin.Context) {
+func (cc *CompanyControllerImpl) UpdateCompany(c *gin.Context) {
 	var companyInput services.OptionalCompanyInput
 
 	if err := c.ShouldBindJSON(&companyInput); err != nil {
@@ -33,7 +33,7 @@ func (cc *CompanyControllerImpl) UpdateDraftCompany(c *gin.Context) {
 		return
 	}
 
-	_, err := cc.CompanyService.UpdateDraftCompany(companyInput)
+	_, err := cc.CompanyService.UpdateCompany(companyInput)
 
 	if err != nil {
 		logging.Error(err)

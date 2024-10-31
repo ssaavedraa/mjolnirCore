@@ -164,7 +164,7 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (uc *UserControllerImpl) UpdateDraftUser(c *gin.Context) {
+func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
 	var userInput services.OptionalUserInput
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
@@ -177,7 +177,7 @@ func (uc *UserControllerImpl) UpdateDraftUser(c *gin.Context) {
 		return
 	}
 
-	_, err := uc.UserService.UpdateDraftUser(userInput)
+	_, err := uc.UserService.UpdateUser(userInput)
 
 	if err != nil {
 		logging.Error(err)
