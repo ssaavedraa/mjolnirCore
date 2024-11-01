@@ -27,11 +27,6 @@ func (tc *TeamcontrollerImpl) GetTeams(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid company id", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": "Invalid company id",
-		// })
 
 		return
 	}
@@ -40,11 +35,6 @@ func (tc *TeamcontrollerImpl) GetTeams(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to fetch company teams. Please try again later", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to fetch company teams. Please try again later",
-		// })
 
 		return
 	}
@@ -71,11 +61,6 @@ func (tc *TeamcontrollerImpl) GetTeamMembers(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid company id", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": "Invalid company id",
-		// })
 
 		return
 	}
@@ -84,11 +69,6 @@ func (tc *TeamcontrollerImpl) GetTeamMembers(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get team members. Please try again later", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to get team members. Please try again later",
-		// })
 
 		return
 	}

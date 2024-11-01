@@ -25,11 +25,6 @@ func (cc *CompanyControllerImpl) UpdateCompany(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&companyInput); err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": "Invalid request payload",
-		// })
 
 		return
 	}
@@ -38,11 +33,6 @@ func (cc *CompanyControllerImpl) UpdateCompany(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to update company, please try again later", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to update company, please try again later",
-		// })
 		return
 	}
 

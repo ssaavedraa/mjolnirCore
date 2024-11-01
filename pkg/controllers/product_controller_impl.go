@@ -64,11 +64,6 @@ func (pc *ProductControllerImpl) GetAllProducts(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products. Please try again later", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to get products. Please try again later",
-		// })
 
 		return
 	}
@@ -96,11 +91,6 @@ func (pc *ProductControllerImpl) GetProductById(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid product id", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": "Invalid product id",
-		// })
 
 		return
 	}
@@ -111,11 +101,6 @@ func (pc *ProductControllerImpl) GetProductById(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get product. Please try again later", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to get product. Please try again later",
-		// })
 
 		return
 	}

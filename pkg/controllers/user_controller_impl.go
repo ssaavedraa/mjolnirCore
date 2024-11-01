@@ -31,11 +31,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 
 		if err := c.ShouldBindJSON(&userInput); err != nil {
 			utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
-			// logging.Error(err)
-
-			// c.JSON(http.StatusBadRequest, gin.H{
-			// 	"message": "Invalid request payload",
-			// })
 
 			return
 		}
@@ -44,11 +39,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 
 		if err != nil {
 			utils.RespondWithError(c, http.StatusBadRequest, "Failed to create user. Please try again later", err)
-			// logging.Error(err)
-
-			// c.JSON(http.StatusInternalServerError, gin.H{
-			// 	"message": "Failed to create user. Please try again later",
-			// })
 
 			return
 		}
@@ -67,11 +57,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 
 		if err := c.ShouldBindJSON(&userInvite); err != nil {
 			utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
-			// logging.Error(err)
-
-			// 	c.JSON(http.StatusBadRequest, gin.H{
-			// 		"message": "Invalid request payload",
-			// 	})
 
 			return
 		}
@@ -82,11 +67,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 
 		if err != nil {
 			utils.RespondWithError(c, http.StatusInternalServerError, "Failed to invite user. Please try again later", err)
-			// logging.Error(err)
-
-			// 	c.JSON(http.StatusInternalServerError, gin.H{
-			// 		"message": "Failed to invite user. Please try again later",
-			// 	})
 
 			return
 		}
@@ -100,11 +80,6 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&credentials); err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": "Invalid request payload",
-		// })
 
 		return
 	}
@@ -114,18 +89,11 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			utils.RespondWithError(c, http.StatusBadRequest, "Invalid credentials", err)
-			// c.JSON(http.StatusBadRequest, gin.H{
-			// 		"message": "Invalid credentials",
-			// 	})
 
 			return
 		}
-		// logging.Error(err)
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to login user. Please try again later", err)
 
-		// c.IndentedJSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to login user. Please try again later",
-		// })
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to login user. Please try again later", err)
 
 		return
 	}
@@ -147,11 +115,7 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to find user by invite id. Please try again later", err)
-		// logging.Error(err)
 
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to find user by invite id. Please try again later",
-		// })
 		return
 	}
 
@@ -180,11 +144,6 @@ func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
-		// logging.Error(err)
-
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": "Invalid request payload",
-		// })
 
 		return
 	}
@@ -193,11 +152,7 @@ func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
 
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to update user. Please try again later", err)
-		// logging.Error(err)
 
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"message": "Failed to update user. Please try again later",
-		// })
 		return
 	}
 
