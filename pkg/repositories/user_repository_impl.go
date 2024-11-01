@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/models"
 )
@@ -12,6 +13,7 @@ func NewUserRepository() UserRepository {
 }
 
 func (repo *UserRepositoryImpl) CreateUser(user models.User) (models.User, error) {
+	fmt.Printf("user: %v", user)
 	result := config.DB.Create(&user)
 
 	if result.Error != nil {
@@ -45,19 +47,25 @@ func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (models.User, err
 	return user, nil
 }
 
+func (repo *UserRepositoryImpl) GetById(id uint) (models.User, error) {
+	var existingUser models.User
+
+	if err := config.DB.First(&existingUser, id).Error; err != nil {
+		return models.User{}, fmt.Errorf("error retrieving user with ID %d, %w", id, err)
+	}
+
+	return existingUser, nil
+}
+
 func (repo *UserRepositoryImpl) Update(user models.User) (models.User, error) {
 	var existingUser models.User
 
-	existingUserResult := config.DB.First(&existingUser, user.ID)
-
-	if existingUserResult.Error != nil {
-		return existingUser, existingUserResult.Error
+	if err := config.DB.First(&existingUser, user.ID).Error; err != nil {
+		return models.User{}, fmt.Errorf("error retriieving user with ID %d, %w", user.ID, err)
 	}
 
-	updatedUserResult := config.DB.Model(&existingUser).Updates(user)
-
-	if updatedUserResult.Error != nil {
-		return models.User{}, updatedUserResult.Error
+	if err := config.DB.Model(&existingUser).Updates(user).Error; err != nil {
+		return models.User{}, fmt.Errorf("error updating user with ID %d, %w", user.ID, err)
 	}
 
 	return user, nil

@@ -3,7 +3,6 @@ package controllers
 import (
 	"hex/mjolnir-core/pkg/services"
 	"hex/mjolnir-core/pkg/utils"
-	"hex/mjolnir-core/pkg/utils/logging"
 	"net/http"
 	"strconv"
 
@@ -26,11 +25,12 @@ func (pc *ProductControllerImpl) CreateProduct(c *gin.Context) {
 	var productInput services.ProductInput
 
 	if err := c.ShouldBindJSON(&productInput); err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request payload",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid request payload",
+		// })
 
 		return
 	}
@@ -38,11 +38,12 @@ func (pc *ProductControllerImpl) CreateProduct(c *gin.Context) {
 	createdProduct, err := pc.ProductService.CreateProduct(productInput)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create product. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to create product. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to create product. Please try again later",
+		// })
 
 		return
 	}
@@ -62,11 +63,12 @@ func (pc *ProductControllerImpl) GetAllProducts(c *gin.Context) {
 	products, err := pc.ProductService.GetAllProducts()
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get products. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get products. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to get products. Please try again later",
+		// })
 
 		return
 	}
@@ -93,11 +95,12 @@ func (pc *ProductControllerImpl) GetProductById(c *gin.Context) {
 	id, err := strconv.ParseUint(idParam, 10, 64)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid product id", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid product id",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid product id",
+		// })
 
 		return
 	}
@@ -107,11 +110,12 @@ func (pc *ProductControllerImpl) GetProductById(c *gin.Context) {
 	product, err := pc.ProductService.GetProductById(uint(productId))
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get product. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get product. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to get product. Please try again later",
+		// })
 
 		return
 	}

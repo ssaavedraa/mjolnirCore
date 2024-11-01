@@ -10,6 +10,7 @@ type UserInput struct {
 	Address     string `json:"address" binding:"required"`
 	CompanyId   uint   `json:"companyId" binding:"required"`
 	CompanyRole string `json:"companyRole" binding:"required"`
+	TeamID      uint   `json:"teamId" binding:"required"`
 }
 
 type OptionalUserInput struct {
@@ -27,6 +28,7 @@ type UserInvite struct {
 	Email       string `json:"email" binding:"required,email"`
 	CompanyName string `json:"companyName" binding:"required"`
 	Fullname    string `json:"fullname" binding:"required"`
+	TeamID      uint   `json:"teamId" binding:"required"`
 }
 
 type UserCredentials struct {

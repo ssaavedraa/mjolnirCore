@@ -2,16 +2,17 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/interfaces"
 	"hex/mjolnir-core/pkg/models"
 	"hex/mjolnir-core/pkg/repositories"
 	"hex/mjolnir-core/pkg/utils"
+	"reflect"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 )
 
 type UserServiceImpl struct {
@@ -58,7 +59,10 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		Password:    string(hash),
 		Email:       input.Email,
 		IsDraft:     creationMethod == "hex-invite",
+		TeamID:      input.TeamID,
 	}
+
+	fmt.Printf("CreateUser - user: %v \n", user)
 
 	if creationMethod == "hex-invite" {
 		user.Password = ""
@@ -145,7 +149,9 @@ func (us *UserServiceImpl) InviteUser(invite UserInvite) (models.User, error) {
 		CompanyId: company.ID,
 		Email:     invite.Email,
 		Fullname:  invite.Fullname,
+		TeamID:    invite.TeamID,
 	}
+	fmt.Printf("InviteUser - user: %v \n", user)
 
 	createdUser, err := us.CreateUser(user, "hex-invite")
 
@@ -167,30 +173,41 @@ func (us *UserServiceImpl) GetByInviteId(inviteId string) (models.User, error) {
 }
 
 func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (models.User, error) {
-	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
+	existingUser, err := us.UserRepository.GetById(input.Id)
 
 	if err != nil {
-		return models.User{}, err
+		return models.User{}, fmt.Errorf("error retieving user: %w", err)
 	}
 
-	user := models.User{
-		Model: gorm.Model{
-			ID: input.Id,
-		},
-		Email:       input.Email,
-		Password:    string(hash),
-		Fullname:    input.Fullname,
-		PhoneNumber: input.PhoneNumber,
-		Address:     input.Address,
-		CompanyRole: input.CompanyRole,
-		CompanyID:   input.CompanyId,
-		IsDraft:     false,
+	inputValue := reflect.ValueOf(input)
+	existingValue := reflect.ValueOf(&existingUser).Elem()
+
+	for i := 0; i < inputValue.NumField(); i++ {
+		inputField := inputValue.Field(i)
+		fieldType := inputValue.Type().Field(i)
+
+		if inputField.IsZero() {
+			continue
+		}
+
+		if fieldType.Name == "Password" {
+			hashedPassword, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
+
+			if err != nil {
+				return models.User{}, fmt.Errorf("error hashing password: %w", err)
+			}
+
+			existingValue.FieldByName(fieldType.Name).SetString(string(hashedPassword))
+			continue
+		}
+
+		existingValue.FieldByName(fieldType.Name).Set(inputField)
 	}
 
-	updatedUser, err := us.UserRepository.Update(user)
+	updatedUser, err := us.UserRepository.Update(existingUser)
 
 	if err != nil {
-		return models.User{}, err
+		return models.User{}, fmt.Errorf("error updating user: %w", err)
 	}
 
 	return updatedUser, nil

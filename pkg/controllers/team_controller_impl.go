@@ -1,8 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"hex/mjolnir-core/pkg/services"
-	"hex/mjolnir-core/pkg/utils/logging"
+	"hex/mjolnir-core/pkg/utils"
 	"net/http"
 	"strconv"
 
@@ -25,11 +26,12 @@ func (tc *TeamcontrollerImpl) GetTeams(c *gin.Context) {
 	companyId, err := strconv.ParseUint(companyIdParam, 10, 64)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid company id", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid company id",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid company id",
+		// })
 
 		return
 	}
@@ -37,11 +39,12 @@ func (tc *TeamcontrollerImpl) GetTeams(c *gin.Context) {
 	teams, err := tc.TeamService.GetTeams(uint(companyId))
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to fetch company teams. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to fetch company teams. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to fetch company teams. Please try again later",
+		// })
 
 		return
 	}
@@ -62,14 +65,17 @@ func (tc *TeamcontrollerImpl) GetTeamMembers(c *gin.Context) {
 	companyIdParam := c.Param("companyId")
 	teamNameParam := c.Param("teamName")
 
+	fmt.Printf("teamNameParam: %v\n", teamNameParam)
+
 	companyId, err := strconv.ParseUint(companyIdParam, 10, 64)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid company id", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid company id",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid company id",
+		// })
 
 		return
 	}
@@ -77,11 +83,12 @@ func (tc *TeamcontrollerImpl) GetTeamMembers(c *gin.Context) {
 	teamMembers, err := tc.TeamService.GetTeamMembers(uint(companyId), teamNameParam)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get team members. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get team members. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to get team members. Please try again later",
+		// })
 
 		return
 	}

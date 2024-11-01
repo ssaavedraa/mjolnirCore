@@ -66,7 +66,7 @@ func SetupRouter(
 	{
 		userApi.POST("", userController.CreateUser)
 		userApi.POST("/login", userController.Login)
-		userApi.GET("invite/:inviteId", userController.GetByInviteId)
+		userApi.GET("/invite/:inviteId", userController.GetByInviteId)
 		userApi.PUT("/:id", userController.UpdateUser)
 	}
 
@@ -88,7 +88,7 @@ func SetupRouter(
 
 	{
 		teamApi.GET("/", teamController.GetTeams)
-		teamApi.GET("/:teamId/members", teamController.GetTeamMembers)
+		teamApi.GET("/:teamName/members", teamController.GetTeamMembers)
 	}
 
 	return r

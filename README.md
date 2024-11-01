@@ -1,3 +1,7 @@
+Here's the updated README with the revised API documentation:
+
+---
+
 # MjolnirCore
 
 **Description**: MjolnirCore is the central repository and core framework of our Content Management System (CMS), implemented in Go with the Gin web framework. Named after Thor's mighty hammer from Norse mythology, MjolnirCore embodies robustness, power, and reliability in managing content and data within our application.
@@ -5,7 +9,7 @@
 ### Key Features
 
 - **Scalable Architecture**: Built with scalability in mind, MjolnirCore provides a solid foundation to handle growing demands and data volumes.
-- **Robust API Endpoints**: Includes a comprehensive set of API endpoints for managing users, products, and invoices, ensuring efficient data operations.
+- **Robust API Endpoints**: Includes a comprehensive set of API endpoints for managing users, products, companies, and teams, ensuring efficient data operations.
 - **Secure Management**: Offers secure storage and management of essential CMS components, maintaining data integrity and accessibility.
 
 **Dependencies**: Built on Go programming language and Gin web framework, leveraging their strengths in performance, concurrency, and web application development.
@@ -27,7 +31,7 @@ The project is structured as follows:
 │   ├── config              # Configuration package
 │   ├── controllers         # API controllers
 │   ├── interfaces          # Interfaces for external services (e.g., bcrypt, jwt)
-│   ├── models              # Data models (e.g., User, Product, Invoice)
+│   ├── models              # Data models (e.g., User, Product, Company, Team)
 │   ├── repositories        # Data access layer (repositories)
 │   ├── routes              # API route definitions
 │   ├── services            # Business logic services
@@ -45,18 +49,18 @@ MjolnirCore provides various endpoints to manage Users, Products, Companies, and
 
 ### Users API
 
-| Method | Endpoint               | Description                       |
-| ------ | ---------------------- | --------------------------------- |
-| POST   | `/api/users`           | Creates a new user                |
-| POST   | `/api/users/login`     | Authenticates user and issues JWT |
-| GET    | `/api/users/:inviteId` | Fetches user by invitation ID     |
-| PUT    | `/api/users`           | Updates user draft information    |
+| Method | Endpoint                      | Description                       |
+| ------ | ----------------------------- | --------------------------------- |
+| POST   | `/api/users`                  | Creates a new user                |
+| POST   | `/api/users/login`            | Authenticates user and issues JWT |
+| GET    | `/api/users/invite/:inviteId` | Fetches user by invitation ID     |
+| PUT    | `/api/users/:id`              | Updates user details              |
 
 ### Companies API
 
-| Method | Endpoint         | Description                       |
-| ------ | ---------------- | --------------------------------- |
-| PUT    | `/api/companies` | Updates company draft information |
+| Method | Endpoint         | Description                 |
+| ------ | ---------------- | --------------------------- |
+| PUT    | `/api/companies` | Updates company information |
 
 ### Products API
 
@@ -68,10 +72,10 @@ MjolnirCore provides various endpoints to manage Users, Products, Companies, and
 
 ### Teams API
 
-| Method | Endpoint                          | Description                           |
-| ------ | --------------------------------- | ------------------------------------- |
-| GET    | `/api/teams/:companyId`           | Lists all teams under a company       |
-| GET    | `/api/teams/:companyId/:teamName` | Lists all members of a specified team |
+| Method | Endpoint                                          | Description                                            |
+| ------ | ------------------------------------------------- | ------------------------------------------------------ |
+| GET    | `/api/companies/:companyId/teams`                 | Lists all teams under a specified company              |
+| GET    | `/api/companies/:companyId/teams/:teamId/members` | Lists all members of a specified team within a company |
 
 ---
 
@@ -100,7 +104,7 @@ PORT
 DB_USER
 DB_PASSWORD
 DB_NAME
-DH_HOST
+DB_HOST
 DB_PORT
 DOMAIN
 JWT_SECRET
@@ -167,7 +171,7 @@ To run tests for this project:
 go test ./...
 ```
 
-Unit tests are located in the tests directory, including mocks for repositories and external interfaces.
+Unit tests are located in the `tests` directory, including mocks for repositories and external interfaces.
 
 To generate required mocks for unit tests:
 
@@ -209,7 +213,6 @@ feat(auth): add JWT token expiration handling
 
 By following these guidelines, we ensure that commit messages are informative and consistent.
 
-```
+---
 
 This should work correctly as Markdown when displayed in a Markdown renderer or text editor that supports it!
-```

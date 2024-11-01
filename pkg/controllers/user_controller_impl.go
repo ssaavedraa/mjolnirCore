@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"hex/mjolnir-core/pkg/services"
 	"hex/mjolnir-core/pkg/utils"
-	"hex/mjolnir-core/pkg/utils/logging"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -30,11 +30,12 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 		var userInput services.UserInput
 
 		if err := c.ShouldBindJSON(&userInput); err != nil {
-			logging.Error(err)
+			utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+			// logging.Error(err)
 
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Invalid request payload",
-			})
+			// c.JSON(http.StatusBadRequest, gin.H{
+			// 	"message": "Invalid request payload",
+			// })
 
 			return
 		}
@@ -42,11 +43,12 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 		createdUser, err := uc.UserService.CreateUser(userInput, creationMethod)
 
 		if err != nil {
-			logging.Error(err)
+			utils.RespondWithError(c, http.StatusBadRequest, "Failed to create user. Please try again later", err)
+			// logging.Error(err)
 
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to create user. Please try again later",
-			})
+			// c.JSON(http.StatusInternalServerError, gin.H{
+			// 	"message": "Failed to create user. Please try again later",
+			// })
 
 			return
 		}
@@ -64,23 +66,28 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 		var userInvite services.UserInvite
 
 		if err := c.ShouldBindJSON(&userInvite); err != nil {
-			logging.Error(err)
+			utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+			// logging.Error(err)
 
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Invalid request payload",
-			})
+			// 	c.JSON(http.StatusBadRequest, gin.H{
+			// 		"message": "Invalid request payload",
+			// 	})
 
 			return
 		}
 
+		fmt.Printf("userInvite: %v \n", userInvite)
+
 		_, err := uc.UserService.InviteUser(userInvite)
 
 		if err != nil {
-			logging.Error(err)
+			utils.RespondWithError(c, http.StatusInternalServerError, "Failed to invite user. Please try again later", err)
+			// logging.Error(err)
 
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to invite user. Please try again later",
-			})
+			// 	c.JSON(http.StatusInternalServerError, gin.H{
+			// 		"message": "Failed to invite user. Please try again later",
+			// 	})
+
 			return
 		}
 
@@ -92,11 +99,12 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 	var credentials services.UserCredentials
 
 	if err := c.ShouldBindJSON(&credentials); err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request payload",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid request payload",
+		// })
 
 		return
 	}
@@ -105,17 +113,19 @@ func (uc *UserControllerImpl) Login(c *gin.Context) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Invalid credentials",
-			})
+			utils.RespondWithError(c, http.StatusBadRequest, "Invalid credentials", err)
+			// c.JSON(http.StatusBadRequest, gin.H{
+			// 		"message": "Invalid credentials",
+			// 	})
 
 			return
 		}
-		logging.Error(err)
+		// logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to login user. Please try again later", err)
 
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to login user. Please try again later",
-		})
+		// c.IndentedJSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to login user. Please try again later",
+		// })
 
 		return
 	}
@@ -136,11 +146,12 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 	user, err := uc.UserService.GetByInviteId(inviteIdParam)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to find user by invite id. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to find user by invite id. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to find user by invite id. Please try again later",
+		// })
 		return
 	}
 
@@ -168,11 +179,12 @@ func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
 	var userInput services.OptionalUserInput
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request payload",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid request payload",
+		// })
 
 		return
 	}
@@ -180,11 +192,12 @@ func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
 	_, err := uc.UserService.UpdateUser(userInput)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to update user. Please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to update user. Please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to update user. Please try again later",
+		// })
 		return
 	}
 

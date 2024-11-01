@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"hex/mjolnir-core/pkg/services"
-	"hex/mjolnir-core/pkg/utils/logging"
+	"hex/mjolnir-core/pkg/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,11 +24,12 @@ func (cc *CompanyControllerImpl) UpdateCompany(c *gin.Context) {
 	var companyInput services.OptionalCompanyInput
 
 	if err := c.ShouldBindJSON(&companyInput); err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request payload",
-		})
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": "Invalid request payload",
+		// })
 
 		return
 	}
@@ -36,11 +37,12 @@ func (cc *CompanyControllerImpl) UpdateCompany(c *gin.Context) {
 	_, err := cc.CompanyService.UpdateCompany(companyInput)
 
 	if err != nil {
-		logging.Error(err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to update company, please try again later", err)
+		// logging.Error(err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to update draft company, please try again later",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"message": "Failed to update company, please try again later",
+		// })
 		return
 	}
 
