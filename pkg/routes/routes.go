@@ -33,11 +33,10 @@ func SetupRouter(
 
 	emailSender := utils.NewEmailSender(config)
 
-	// TODO: inject db for all repos
-	productRepository := repositories.NewProductRepository()
+	productRepository := repositories.NewProductRepository(db)
 	companyRepository := repositories.NewCompanyRepository(db)
-	userRepository := repositories.NewUserRepository()
-	teamRepository := repositories.NewTeamRepository()
+	userRepository := repositories.NewUserRepository(db)
+	teamRepository := repositories.NewTeamRepository(db)
 
 	userService := services.NewUserService(
 		companyRepository,

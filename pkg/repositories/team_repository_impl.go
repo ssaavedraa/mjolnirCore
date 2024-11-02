@@ -1,26 +1,28 @@
 package repositories
 
 import (
-	"fmt"
-	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/models"
-	"log"
+
+	"gorm.io/gorm"
 )
 
-type TeamRepositoryImpl struct{}
+type TeamRepositoryImpl struct {
+	db *gorm.DB
+}
 
-func NewTeamRepository() TeamRepository {
-	return &TeamRepositoryImpl{}
+func NewTeamRepository(db *gorm.DB) TeamRepository {
+	return &TeamRepositoryImpl{
+		db: db,
+	}
 }
 
 func (repo *TeamRepositoryImpl) GetTeams(companyId uint) ([]models.Team, error) {
 	var teams = []models.Team{}
-	log.Printf("companyId: %v", companyId)
 
-	result := config.DB.Where("company_id = ?", companyId).Find(&teams)
-
-	if result.Error != nil {
-		return teams, result.Error
+	if err := repo.db.
+		Where("company_id = ?", companyId).
+		Find(&teams).Error; err != nil {
+		return []models.Team{}, err
 	}
 
 	return teams, nil
@@ -29,7 +31,7 @@ func (repo *TeamRepositoryImpl) GetTeams(companyId uint) ([]models.Team, error) 
 func (repo *TeamRepositoryImpl) GetTeamMembers(companyId uint, teamName string) ([]TeamMember, error) {
 	var teamMembers = []TeamMember{}
 
-	result := config.DB.Debug().
+	if err := repo.db.
 		Model(&models.User{}).
 		Select("users.*, company_roles.role_id, roles.name as role_name").
 		Joins("JOIN teams ON teams.id = users.team_id").
@@ -37,13 +39,9 @@ func (repo *TeamRepositoryImpl) GetTeamMembers(companyId uint, teamName string) 
 		Joins("JOIN roles ON roles.id = company_roles.role_id").
 		Where("teams.name ILIKE ? AND users.company_id = ?", teamName, companyId).
 		Preload("Team").
-		Find(&teamMembers)
-
-	if result.Error != nil {
-		return teamMembers, result.Error
+		Find(&teamMembers).Error; err != nil {
+		return teamMembers, err
 	}
-
-	fmt.Printf("team members: %v\n", teamMembers)
 
 	return teamMembers, nil
 }

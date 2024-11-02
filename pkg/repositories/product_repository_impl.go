@@ -1,23 +1,24 @@
 package repositories
 
 import (
-	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/models"
 
 	"gorm.io/gorm"
 )
 
-type ProductRepositoryImpl struct{}
+type ProductRepositoryImpl struct {
+	db *gorm.DB
+}
 
-func NewProductRepository() ProductRepository {
-	return &ProductRepositoryImpl{}
+func NewProductRepository(db *gorm.DB) ProductRepository {
+	return &ProductRepositoryImpl{
+		db: db,
+	}
 }
 
 func (repo *ProductRepositoryImpl) CreateProduct(product models.Product) (models.Product, error) {
-	result := config.DB.Create(&product)
-
-	if result.Error != nil {
-		return models.Product{}, result.Error
+	if err := repo.db.Create(&product).Error; err != nil {
+		return models.Product{}, err
 	}
 
 	return product, nil
@@ -25,10 +26,8 @@ func (repo *ProductRepositoryImpl) CreateProduct(product models.Product) (models
 
 func (repo *ProductRepositoryImpl) GetAllProducts() ([]models.Product, error) {
 	var products []models.Product
-	result := config.DB.Find(&products)
-
-	if result.Error != nil {
-		return []models.Product{}, result.Error
+	if err := repo.db.Find(&products).Error; err != nil {
+		return []models.Product{}, err
 	}
 
 	return products, nil
@@ -41,10 +40,8 @@ func (repo *ProductRepositoryImpl) GetProductById(id uint) (models.Product, erro
 		},
 	}
 
-	result := config.DB.Find(&product)
-
-	if result.Error != nil {
-		return models.Product{}, result.Error
+	if err := repo.db.Find(&product).Error; err != nil {
+		return models.Product{}, err
 	}
 
 	return product, nil

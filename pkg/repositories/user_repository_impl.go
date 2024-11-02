@@ -2,18 +2,23 @@ package repositories
 
 import (
 	"fmt"
-	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/models"
+
+	"gorm.io/gorm"
 )
 
-type UserRepositoryImpl struct{}
+type UserRepositoryImpl struct {
+	db *gorm.DB
+}
 
-func NewUserRepository() UserRepository {
-	return &UserRepositoryImpl{}
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &UserRepositoryImpl{
+		db: db,
+	}
 }
 
 func (repo *UserRepositoryImpl) CreateUser(user models.User) (models.User, error) {
-	result := config.DB.Create(&user)
+	result := repo.db.Create(&user)
 
 	if result.Error != nil {
 		return models.User{}, result.Error
@@ -25,7 +30,7 @@ func (repo *UserRepositoryImpl) CreateUser(user models.User) (models.User, error
 func (repo *UserRepositoryImpl) GetUserByEmail(email string) (models.User, error) {
 	var user = models.User{}
 
-	result := config.DB.First(&user, "email = ?", email)
+	result := repo.db.First(&user, "email = ?", email)
 
 	if result.Error != nil {
 		return user, result.Error
@@ -37,7 +42,7 @@ func (repo *UserRepositoryImpl) GetUserByEmail(email string) (models.User, error
 func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (models.User, error) {
 	var user = models.User{}
 
-	result := config.DB.Preload("Company").Where("invite_id = ?", inviteId).First(&user)
+	result := repo.db.Preload("Company").Where("invite_id = ?", inviteId).First(&user)
 
 	if result.Error != nil {
 		return user, result.Error
@@ -49,7 +54,7 @@ func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (models.User, err
 func (repo *UserRepositoryImpl) GetById(id uint) (models.User, error) {
 	var existingUser models.User
 
-	if err := config.DB.First(&existingUser, id).Error; err != nil {
+	if err := repo.db.First(&existingUser, id).Error; err != nil {
 		return models.User{}, fmt.Errorf("error retrieving user with ID %d, %w", id, err)
 	}
 
@@ -59,11 +64,11 @@ func (repo *UserRepositoryImpl) GetById(id uint) (models.User, error) {
 func (repo *UserRepositoryImpl) Update(user models.User) (models.User, error) {
 	var existingUser models.User
 
-	if err := config.DB.First(&existingUser, user.ID).Error; err != nil {
+	if err := repo.db.First(&existingUser, user.ID).Error; err != nil {
 		return models.User{}, fmt.Errorf("error retriieving user with ID %d, %w", user.ID, err)
 	}
 
-	if err := config.DB.Model(&existingUser).Updates(user).Error; err != nil {
+	if err := repo.db.Model(&existingUser).Updates(user).Error; err != nil {
 		return models.User{}, fmt.Errorf("error updating user with ID %d, %w", user.ID, err)
 	}
 
