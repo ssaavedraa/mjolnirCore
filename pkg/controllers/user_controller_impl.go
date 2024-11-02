@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"hex/mjolnir-core/pkg/services"
@@ -60,8 +59,6 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 
 			return
 		}
-
-		fmt.Printf("userInvite: %v \n", userInvite)
 
 		_, err := uc.UserService.InviteUser(userInvite)
 
@@ -125,7 +122,7 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 		"fullname":    user.Fullname,
 		"phoneNumber": user.PhoneNumber,
 		"address":     user.Address,
-		"companyRole": user.CompanyRole,
+		"companyRole": user.CompanyRoleId,
 		"company": utils.ResponseFields{
 			"id":          user.CompanyID,
 			"name":        user.Company.Name,

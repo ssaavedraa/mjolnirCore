@@ -19,6 +19,7 @@ func main() {
 		bcrypt,
 		jwt,
 		cfg,
+		config.DB,
 	)
 
 	port := cfg.GetEnv("PORT")

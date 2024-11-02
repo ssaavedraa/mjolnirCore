@@ -62,8 +62,6 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		TeamID:      input.TeamID,
 	}
 
-	fmt.Printf("CreateUser - user: %v \n", user)
-
 	if creationMethod == "hex-invite" {
 		user.Password = ""
 		user.InviteId = utils.GenerateId()
@@ -151,7 +149,6 @@ func (us *UserServiceImpl) InviteUser(invite UserInvite) (models.User, error) {
 		Fullname:  invite.Fullname,
 		TeamID:    invite.TeamID,
 	}
-	fmt.Printf("InviteUser - user: %v \n", user)
 
 	createdUser, err := us.CreateUser(user, "hex-invite")
 

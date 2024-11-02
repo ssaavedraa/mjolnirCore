@@ -5,4 +5,5 @@ import "hex/mjolnir-core/pkg/models"
 type CompanyRepository interface {
 	FindByNameOrCreate(name string) (models.Company, error)
 	Update(company models.Company) (models.Company, error)
+	GetCompanyRoles(companyId uint) ([]models.CompanyRole, error)
 }

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"hex/mjolnir-core/pkg/services"
 	"hex/mjolnir-core/pkg/utils"
 	"net/http"
@@ -55,8 +54,6 @@ func (tc *TeamcontrollerImpl) GetTeamMembers(c *gin.Context) {
 	companyIdParam := c.Param("companyId")
 	teamNameParam := c.Param("teamName")
 
-	fmt.Printf("teamNameParam: %v\n", teamNameParam)
-
 	companyId, err := strconv.ParseUint(companyIdParam, 10, 64)
 
 	if err != nil {
@@ -80,7 +77,7 @@ func (tc *TeamcontrollerImpl) GetTeamMembers(c *gin.Context) {
 			"id":       teamMember.ID,
 			"name":     teamMember.Fullname,
 			"email":    teamMember.Email,
-			"role":     teamMember.CompanyRole,
+			"role":     teamMember.RoleName,
 			"teamName": teamMember.Team.Name,
 		})
 	}

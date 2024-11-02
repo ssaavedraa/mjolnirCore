@@ -27,11 +27,11 @@ func (ts *TeamServiceImpl) GetTeams(companyId uint) ([]models.Team, error) {
 	return teams, nil
 }
 
-func (ts *TeamServiceImpl) GetTeamMembers(companyId uint, teamName string) ([]models.User, error) {
+func (ts *TeamServiceImpl) GetTeamMembers(companyId uint, teamName string) ([]repositories.TeamMember, error) {
 	teamMembers, err := ts.TeamRepository.GetTeamMembers(companyId, teamName)
 
 	if err != nil {
-		return []models.User{}, err
+		return []repositories.TeamMember{}, err
 	}
 
 	return teamMembers, nil

@@ -40,3 +40,13 @@ func (cs *CompanyServiceImpl) UpdateCompany(input OptionalCompanyInput) (models.
 
 	return updatedCompany, nil
 }
+
+func (cs *CompanyServiceImpl) GetCompanyRoles(companyId uint) ([]models.CompanyRole, error) {
+	companyRoles, err := cs.CompanyRepository.GetCompanyRoles(companyId)
+
+	if err != nil {
+		return []models.CompanyRole{}, err
+	}
+
+	return companyRoles, nil
+}

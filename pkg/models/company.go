@@ -11,6 +11,7 @@ type Company struct {
 	PhoneNumber string
 	IsDraft     bool `gorm:"default:true"`
 
-	Products    []Product
-	TeamMembers []User
+	Products     []Product
+	TeamMembers  []User
+	CompanyRoles []CompanyRole
 }

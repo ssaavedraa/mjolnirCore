@@ -13,7 +13,6 @@ func NewUserRepository() UserRepository {
 }
 
 func (repo *UserRepositoryImpl) CreateUser(user models.User) (models.User, error) {
-	fmt.Printf("user: %v", user)
 	result := config.DB.Create(&user)
 
 	if result.Error != nil {

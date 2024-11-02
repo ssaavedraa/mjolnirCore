@@ -12,12 +12,14 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func SetupRouter(
 	bcrypt interfaces.BcryptInterface,
 	jwt interfaces.JwtInterface,
 	config config.Config,
+	db *gorm.DB,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -31,8 +33,9 @@ func SetupRouter(
 
 	emailSender := utils.NewEmailSender(config)
 
+	// TODO: inject db for all repos
 	productRepository := repositories.NewProductRepository()
-	companyRepository := repositories.NewCompanyRepository()
+	companyRepository := repositories.NewCompanyRepository(db)
 	userRepository := repositories.NewUserRepository()
 	teamRepository := repositories.NewTeamRepository()
 
@@ -74,6 +77,7 @@ func SetupRouter(
 
 	{
 		companyApi.PUT("", companyController.UpdateCompany)
+		companyApi.GET("/:companyId/roles", companyController.GetCompanyRoles)
 	}
 
 	productApi := api.Group("/products")

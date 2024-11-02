@@ -4,14 +4,14 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Fullname    string
-	Email       string `gorm:"uniqueIndex"`
-	PhoneNumber string
-	Address     string
-	Password    string
-	CompanyRole string
-	IsDraft     bool   `gorm:"default:false"`
-	InviteId    string `gorm:"default:null"`
+	Fullname      string
+	Email         string `gorm:"uniqueIndex"`
+	PhoneNumber   string
+	Address       string
+	Password      string
+	IsDraft       bool   `gorm:"default:false"`
+	InviteId      string `gorm:"default:null"`
+	CompanyRoleId uint
 
 	CompanyID uint
 	TeamID    uint

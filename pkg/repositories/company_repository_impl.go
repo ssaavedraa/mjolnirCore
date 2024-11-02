@@ -3,12 +3,18 @@ package repositories
 import (
 	"hex/mjolnir-core/pkg/config"
 	"hex/mjolnir-core/pkg/models"
+
+	"gorm.io/gorm"
 )
 
-type CompanyRepositoryImpl struct{}
+type CompanyRepositoryImpl struct {
+	db *gorm.DB
+}
 
-func NewCompanyRepository() CompanyRepository {
-	return &CompanyRepositoryImpl{}
+func NewCompanyRepository(db *gorm.DB) CompanyRepository {
+	return &CompanyRepositoryImpl{
+		db: db,
+	}
 }
 
 func (repo *CompanyRepositoryImpl) FindByNameOrCreate(name string) (models.Company, error) {
@@ -16,10 +22,10 @@ func (repo *CompanyRepositoryImpl) FindByNameOrCreate(name string) (models.Compa
 		Name: name,
 	}
 
-	result := config.DB.Where("name = ?", name).FirstOrCreate(&company)
+	err := repo.db.Where("name = ?", name).FirstOrCreate(&company).Error
 
-	if result.Error != nil {
-		return models.Company{}, result.Error
+	if err != nil {
+		return models.Company{}, err
 	}
 
 	return company, nil
@@ -28,17 +34,29 @@ func (repo *CompanyRepositoryImpl) FindByNameOrCreate(name string) (models.Compa
 func (repo *CompanyRepositoryImpl) Update(company models.Company) (models.Company, error) {
 	var existingCompany models.Company
 
-	existingCompanyResult := config.DB.First(&existingCompany, company.ID)
-
-	if existingCompanyResult.Error != nil {
-		return existingCompany, existingCompanyResult.Error
+	if err := repo.db.First(&existingCompany, company.ID).Error; err != nil {
+		return models.Company{}, err
 	}
 
-	updatedCompanyResult := config.DB.Model(&existingCompany).Updates(company)
-
-	if updatedCompanyResult.Error != nil {
-		return existingCompany, updatedCompanyResult.Error
+	if err := config.DB.Model(&existingCompany).Updates(company).Error; err != nil {
+		return models.Company{}, err
 	}
 
 	return company, nil
+}
+
+func (repo *CompanyRepositoryImpl) GetCompanyRoles(companyId uint) ([]models.CompanyRole, error) {
+	var companyRoles []models.CompanyRole
+
+	err := repo.db.Debug().
+		Joins("JOIN roles ON roles.id = company_roles.role_id").
+		Where("company_roles.company_id = ?", companyId).
+		Preload("Role").
+		Find(&companyRoles).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return companyRoles, nil
 }
