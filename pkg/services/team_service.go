@@ -6,6 +6,6 @@ import (
 )
 
 type TeamService interface {
-	GetTeams(companyId uint) ([]models.Team, error)
-	GetTeamMembers(companyId uint, teamName string) ([]repositories.TeamMember, error)
+	GetTeams(companyId uint) ([]*models.Team, error)
+	GetTeamMembers(companyId uint, teamName string) ([]*repositories.TeamMember, error)
 }

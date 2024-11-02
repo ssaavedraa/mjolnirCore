@@ -8,6 +8,6 @@ type TeamMember struct {
 }
 
 type TeamRepository interface {
-	GetTeams(companyId uint) ([]models.Team, error)
-	GetTeamMembers(companyId uint, teamName string) ([]TeamMember, error)
+	GetTeams(companyId uint) ([]*models.Team, error)
+	GetTeamMembers(companyId uint, teamName string) ([]*TeamMember, error)
 }

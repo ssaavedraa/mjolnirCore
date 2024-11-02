@@ -42,13 +42,13 @@ func NewUserService(
 	}
 }
 
-func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (models.User, error) {
+func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (*models.User, error) {
 	emailTemplate := getEmailTemplateId(creationMethod)
 
 	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	user := models.User{
@@ -67,10 +67,10 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		user.InviteId = utils.GenerateId()
 	}
 
-	createdUser, err := us.UserRepository.CreateUser(user)
+	createdUser, err := us.UserRepository.CreateUser(&user)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	if creationMethod == "hex-invite" {
@@ -90,31 +90,31 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (m
 		_, err = json.Marshal(email)
 
 		if err != nil {
-			return models.User{}, err
+			return nil, err
 		}
 
 		err = us.EmailSender.Send(email)
 
 		if err != nil {
-			return models.User{}, err
+			return nil, err
 		}
 	}
 
 	return createdUser, nil
 }
 
-func (us *UserServiceImpl) Login(credentials UserCredentials) (models.User, string, error) {
+func (us *UserServiceImpl) Login(credentials UserCredentials) (*models.User, string, error) {
 	user, err := us.UserRepository.GetUserByEmail(credentials.Email)
 
 	if err != nil {
-		return models.User{}, "", err
+		return nil, "", err
 	}
 
 	if err := us.Bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
 		[]byte(credentials.Password),
 	); err != nil {
-		return models.User{}, "", err
+		return nil, "", err
 	}
 
 	token := us.Jwt.NewWithClaims(
@@ -130,17 +130,17 @@ func (us *UserServiceImpl) Login(credentials UserCredentials) (models.User, stri
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 
 	if err != nil {
-		return models.User{}, "", err
+		return nil, "", err
 	}
 
 	return user, tokenString, nil
 }
 
-func (us *UserServiceImpl) InviteUser(invite UserInvite) (models.User, error) {
-	company, err := us.CompanyRepository.FindByNameOrCreate(invite.CompanyName)
+func (us *UserServiceImpl) InviteUser(invite UserInvite) (*models.User, error) {
+	company, err := us.CompanyRepository.FindOrCreateCompanyByName(invite.CompanyName)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	user := UserInput{
@@ -153,27 +153,27 @@ func (us *UserServiceImpl) InviteUser(invite UserInvite) (models.User, error) {
 	createdUser, err := us.CreateUser(user, "hex-invite")
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	return createdUser, nil
 }
 
-func (us *UserServiceImpl) GetByInviteId(inviteId string) (models.User, error) {
+func (us *UserServiceImpl) GetByInviteId(inviteId string) (*models.User, error) {
 	user, err := us.UserRepository.GetByInviteId(inviteId)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	return user, nil
 }
 
-func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (models.User, error) {
+func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (*models.User, error) {
 	existingUser, err := us.UserRepository.GetById(input.Id)
 
 	if err != nil {
-		return models.User{}, fmt.Errorf("error retieving user: %w", err)
+		return nil, fmt.Errorf("error retieving user: %w", err)
 	}
 
 	inputValue := reflect.ValueOf(input)
@@ -191,7 +191,7 @@ func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (models.User, err
 			hashedPassword, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 
 			if err != nil {
-				return models.User{}, fmt.Errorf("error hashing password: %w", err)
+				return nil, fmt.Errorf("error hashing password: %w", err)
 			}
 
 			existingValue.FieldByName(fieldType.Name).SetString(string(hashedPassword))
@@ -204,7 +204,7 @@ func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (models.User, err
 	updatedUser, err := us.UserRepository.Update(existingUser)
 
 	if err != nil {
-		return models.User{}, fmt.Errorf("error updating user: %w", err)
+		return nil, fmt.Errorf("error updating user: %w", err)
 	}
 
 	return updatedUser, nil

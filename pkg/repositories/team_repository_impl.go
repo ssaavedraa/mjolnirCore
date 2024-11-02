@@ -16,20 +16,20 @@ func NewTeamRepository(db *gorm.DB) TeamRepository {
 	}
 }
 
-func (repo *TeamRepositoryImpl) GetTeams(companyId uint) ([]models.Team, error) {
-	var teams = []models.Team{}
+func (repo *TeamRepositoryImpl) GetTeams(companyId uint) ([]*models.Team, error) {
+	var teams = []*models.Team{}
 
 	if err := repo.db.
 		Where("company_id = ?", companyId).
 		Find(&teams).Error; err != nil {
-		return []models.Team{}, err
+		return nil, err
 	}
 
 	return teams, nil
 }
 
-func (repo *TeamRepositoryImpl) GetTeamMembers(companyId uint, teamName string) ([]TeamMember, error) {
-	var teamMembers = []TeamMember{}
+func (repo *TeamRepositoryImpl) GetTeamMembers(companyId uint, teamName string) ([]*TeamMember, error) {
+	var teamMembers = []*TeamMember{}
 
 	if err := repo.db.
 		Model(&models.User{}).
@@ -40,7 +40,7 @@ func (repo *TeamRepositoryImpl) GetTeamMembers(companyId uint, teamName string) 
 		Where("teams.name ILIKE ? AND users.company_id = ?", teamName, companyId).
 		Preload("Team").
 		Find(&teamMembers).Error; err != nil {
-		return teamMembers, err
+		return nil, err
 	}
 
 	return teamMembers, nil

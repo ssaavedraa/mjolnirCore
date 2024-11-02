@@ -37,6 +37,7 @@ func SetupRouter(
 	companyRepository := repositories.NewCompanyRepository(db)
 	userRepository := repositories.NewUserRepository(db)
 	teamRepository := repositories.NewTeamRepository(db)
+	companyRoleRepository := repositories.NewCompanyRoleRepository(db)
 
 	userService := services.NewUserService(
 		companyRepository,
@@ -48,6 +49,7 @@ func SetupRouter(
 	)
 	companyService := services.NewCompanyService(
 		companyRepository,
+		companyRoleRepository,
 	)
 	productService := services.NewProductService(
 		productRepository,
@@ -77,6 +79,7 @@ func SetupRouter(
 	{
 		companyApi.PUT("", companyController.UpdateCompany)
 		companyApi.GET("/:companyId/roles", companyController.GetCompanyRoles)
+		companyApi.POST("/:companyId/roles")
 	}
 
 	productApi := api.Group("/products")

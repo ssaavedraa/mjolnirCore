@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"strings"
+
+	"gorm.io/gorm"
+)
 
 type Role struct {
 	gorm.Model
@@ -18,4 +22,9 @@ type CompanyRole struct {
 	Users   []User  `gorm:"foreignKey:CompanyRoleId"`
 	Company Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Role    Role    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (role *Role) BeforeSave(tx *gorm.DB) (err error) {
+	role.Name = strings.ToLower(role.Name)
+	return
 }

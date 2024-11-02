@@ -82,6 +82,7 @@ func migrateDatabase(db *gorm.DB) error {
 	// Drop and recreate the unique index with a partial constraint
 	db.Exec("DROP INDEX IF EXISTS idx_companies_nit;")
 	db.Exec("CREATE UNIQUE INDEX idx_companies_nit ON companies (nit) WHERE nit IS NOT NULL;")
+	db.Exec("CREATE UNIQUE INDEX idx_roles_name_ci ON roles (LOWER(name));")
 
 	return nil
 }

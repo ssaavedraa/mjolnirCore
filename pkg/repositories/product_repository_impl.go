@@ -16,9 +16,9 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 	}
 }
 
-func (repo *ProductRepositoryImpl) CreateProduct(product models.Product) (models.Product, error) {
+func (repo *ProductRepositoryImpl) CreateProduct(product *models.Product) (*models.Product, error) {
 	if err := repo.db.Create(&product).Error; err != nil {
-		return models.Product{}, err
+		return nil, err
 	}
 
 	return product, nil
@@ -27,13 +27,13 @@ func (repo *ProductRepositoryImpl) CreateProduct(product models.Product) (models
 func (repo *ProductRepositoryImpl) GetAllProducts() ([]models.Product, error) {
 	var products []models.Product
 	if err := repo.db.Find(&products).Error; err != nil {
-		return []models.Product{}, err
+		return nil, err
 	}
 
 	return products, nil
 }
 
-func (repo *ProductRepositoryImpl) GetProductById(id uint) (models.Product, error) {
+func (repo *ProductRepositoryImpl) GetProductById(id uint) (*models.Product, error) {
 	product := models.Product{
 		Model: gorm.Model{
 			ID: id,
@@ -41,8 +41,8 @@ func (repo *ProductRepositoryImpl) GetProductById(id uint) (models.Product, erro
 	}
 
 	if err := repo.db.Find(&product).Error; err != nil {
-		return models.Product{}, err
+		return nil, err
 	}
 
-	return product, nil
+	return &product, nil
 }

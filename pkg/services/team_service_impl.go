@@ -17,21 +17,21 @@ func NewTeamService(
 	}
 }
 
-func (ts *TeamServiceImpl) GetTeams(companyId uint) ([]models.Team, error) {
+func (ts *TeamServiceImpl) GetTeams(companyId uint) ([]*models.Team, error) {
 	teams, err := ts.TeamRepository.GetTeams(companyId)
 
 	if err != nil {
-		return []models.Team{}, err
+		return nil, err
 	}
 
 	return teams, nil
 }
 
-func (ts *TeamServiceImpl) GetTeamMembers(companyId uint, teamName string) ([]repositories.TeamMember, error) {
+func (ts *TeamServiceImpl) GetTeamMembers(companyId uint, teamName string) ([]*repositories.TeamMember, error) {
 	teamMembers, err := ts.TeamRepository.GetTeamMembers(companyId, teamName)
 
 	if err != nil {
-		return []repositories.TeamMember{}, err
+		return nil, err
 	}
 
 	return teamMembers, nil

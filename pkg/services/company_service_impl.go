@@ -8,18 +8,21 @@ import (
 )
 
 type CompanyServiceImpl struct {
-	CompanyRepository repositories.CompanyRepository
+	CompanyRepository     repositories.CompanyRepository
+	CompanyRoleRepository repositories.CompanyRoleRepository
 }
 
 func NewCompanyService(
 	companyRepository repositories.CompanyRepository,
+	companyRoleRepository repositories.CompanyRoleRepository,
 ) CompanyService {
 	return &CompanyServiceImpl{
-		CompanyRepository: companyRepository,
+		CompanyRepository:     companyRepository,
+		CompanyRoleRepository: companyRoleRepository,
 	}
 }
 
-func (cs *CompanyServiceImpl) UpdateCompany(input OptionalCompanyInput) (models.Company, error) {
+func (cs *CompanyServiceImpl) UpdateCompany(input OptionalCompanyInput) (*models.Company, error) {
 	company := models.Company{
 		Model: gorm.Model{
 			ID: input.Id,
@@ -32,17 +35,17 @@ func (cs *CompanyServiceImpl) UpdateCompany(input OptionalCompanyInput) (models.
 		IsDraft:     false,
 	}
 
-	updatedCompany, err := cs.CompanyRepository.Update(company)
+	updatedCompany, err := cs.CompanyRepository.Update(&company)
 
 	if err != nil {
-		return models.Company{}, err
+		return nil, err
 	}
 
 	return updatedCompany, nil
 }
 
 func (cs *CompanyServiceImpl) GetCompanyRoles(companyId uint) ([]models.CompanyRole, error) {
-	companyRoles, err := cs.CompanyRepository.GetCompanyRoles(companyId)
+	companyRoles, err := cs.CompanyRoleRepository.GetCompanyRoles(companyId)
 
 	if err != nil {
 		return []models.CompanyRole{}, err

@@ -12,6 +12,6 @@ type OptionalCompanyInput struct {
 }
 
 type CompanyService interface {
-	UpdateCompany(input OptionalCompanyInput) (models.Company, error)
+	UpdateCompany(input OptionalCompanyInput) (*models.Company, error)
 	GetCompanyRoles(companyId uint) ([]models.CompanyRole, error)
 }

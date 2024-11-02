@@ -13,7 +13,7 @@ type ProductInput struct {
 }
 
 type ProductService interface {
-	CreateProduct(input ProductInput) (models.Product, error)
+	CreateProduct(input ProductInput) (*models.Product, error)
 	GetAllProducts() ([]models.Product, error)
-	GetProductById(id uint) (models.Product, error)
+	GetProductById(id uint) (*models.Product, error)
 }
