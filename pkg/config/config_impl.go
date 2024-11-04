@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"hex/mjolnir-core/pkg/models"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -70,19 +69,91 @@ func initDatabase(c *ConfigImpl) *gorm.DB {
 }
 
 func migrateDatabase(db *gorm.DB) error {
-	if err := db.AutoMigrate(
-		&models.User{},
-		&models.Company{},
-		&models.Product{},
-		&models.Team{},
-	); err != nil {
-		return fmt.Errorf("error during migration: %w", err)
+	sqlDB, err := db.DB()
+
+	if err != nil {
+		return fmt.Errorf("failed to get sql.DB: %w", err)
 	}
 
-	// Drop and recreate the unique index with a partial constraint
-	db.Exec("DROP INDEX IF EXISTS idx_companies_nit;")
-	db.Exec("CREATE UNIQUE INDEX idx_companies_nit ON companies (nit) WHERE nit IS NOT NULL;")
-	db.Exec("CREATE UNIQUE INDEX idx_roles_name_ci ON roles (LOWER(name));")
+	projectDir, err := os.Getwd()
+
+	if err != nil {
+		return fmt.Errorf("failed to get current working directory: %w", err)
+	}
+
+	migrationDir := filepath.Join(projectDir, "pkg", "config", "db", "migrations")
+
+	migrationFiles, err := os.ReadDir(migrationDir)
+
+	if err != nil {
+		return fmt.Errorf("failed to read migration directory: %w", err)
+	}
+
+	for _, file := range migrationFiles {
+		if file.IsDir() {
+			continue
+		}
+
+		if filepath.Ext(file.Name()) == ".sql" && file.Name() == file.Name()[:len(file.Name())-7]+".up.sql" {
+			content, err := os.ReadFile(filepath.Join(migrationDir, file.Name()))
+
+			if err != nil {
+				return fmt.Errorf("failed to read migration file %s: %w", file.Name(), err)
+			}
+			_, err = sqlDB.Exec(string(content))
+
+			if err != nil {
+				return fmt.Errorf("failed to execute migration %s: %w", file.Name(), err)
+			}
+
+			log.Printf("Executed migration: %s", file.Name())
+		}
+	}
+
+	return nil
+}
+
+func rollbackMigration(db *gorm.DB, migrationName string) error {
+	sqlDB, err := db.DB()
+
+	if err != nil {
+		return fmt.Errorf("failed to get sql.DB: %w", err)
+	}
+
+	projectDir, err := os.Getwd()
+
+	if err != nil {
+		return fmt.Errorf("failed to get current working directory: %w", err)
+	}
+
+	migrationDir := filepath.Join(projectDir, "pkg", "config", "db", "migrations")
+
+	migrationFiles, err := os.ReadDir(migrationDir)
+
+	if err != nil {
+		return fmt.Errorf("failed to read migration directory: %w", err)
+	}
+
+	for _, file := range migrationFiles {
+		if file.IsDir() {
+			continue
+		}
+
+		if filepath.Ext(file.Name()) == ".sql" && file.Name() == file.Name()[:len(file.Name())-9]+".down.sql" {
+			content, err := os.ReadFile(filepath.Join(migrationDir, file.Name()))
+
+			if err != nil {
+				return fmt.Errorf("failed to read migration file %s: %w", file.Name(), err)
+			}
+			_, err = sqlDB.Exec(string(content))
+
+			if err != nil {
+				return fmt.Errorf("failed to execute migration %s: %w", file.Name(), err)
+			}
+
+			log.Printf("Executed rollback: %s", file.Name())
+		}
+	}
 
 	return nil
 }

@@ -33,12 +33,12 @@ func (repo *TeamRepositoryImpl) GetTeamMembers(companyId uint, teamName string) 
 
 	if err := repo.db.
 		Model(&models.User{}).
-		Select("users.*, company_roles.role_id, roles.name as role_name").
+		Select("users.*, roles.name as role_name").
 		Joins("JOIN teams ON teams.id = users.team_id").
-		Joins("JOIN company_roles ON company_roles.id = users.company_role_id").
-		Joins("JOIN roles ON roles.id = company_roles.role_id").
+		Joins("JOIN roles ON roles.id = users.role_id").
 		Where("teams.name ILIKE ? AND users.company_id = ?", teamName, companyId).
 		Preload("Team").
+		Preload("Role").
 		Find(&teamMembers).Error; err != nil {
 		return nil, err
 	}

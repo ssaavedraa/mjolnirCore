@@ -8,17 +8,17 @@ import (
 )
 
 type CompanyServiceImpl struct {
-	CompanyRepository     repositories.CompanyRepository
-	CompanyRoleRepository repositories.CompanyRoleRepository
+	CompanyRepository repositories.CompanyRepository
+	RoleRepository    repositories.RoleRepository
 }
 
 func NewCompanyService(
 	companyRepository repositories.CompanyRepository,
-	companyRoleRepository repositories.CompanyRoleRepository,
+	roleRepository repositories.RoleRepository,
 ) CompanyService {
 	return &CompanyServiceImpl{
-		CompanyRepository:     companyRepository,
-		CompanyRoleRepository: companyRoleRepository,
+		CompanyRepository: companyRepository,
+		RoleRepository:    roleRepository,
 	}
 }
 
@@ -44,12 +44,22 @@ func (cs *CompanyServiceImpl) UpdateCompany(input OptionalCompanyInput) (*models
 	return updatedCompany, nil
 }
 
-func (cs *CompanyServiceImpl) GetCompanyRoles(companyId uint) ([]models.CompanyRole, error) {
-	companyRoles, err := cs.CompanyRoleRepository.GetCompanyRoles(companyId)
+func (cs *CompanyServiceImpl) GetCompanyRoles(companyId uint) ([]models.Role, error) {
+	companyRoles, err := cs.RoleRepository.GetCompanyRoles(companyId)
 
 	if err != nil {
-		return []models.CompanyRole{}, err
+		return nil, err
 	}
 
 	return companyRoles, nil
+}
+
+func (cs *CompanyServiceImpl) CreateCompanyRole(companyId uint, roleName string) error {
+	_, err := cs.RoleRepository.FindOrCreateRoleByName(roleName, companyId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

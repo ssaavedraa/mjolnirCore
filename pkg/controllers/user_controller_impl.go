@@ -122,7 +122,7 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 		"fullname":    user.Fullname,
 		"phoneNumber": user.PhoneNumber,
 		"address":     user.Address,
-		"companyRole": user.CompanyRoleId,
+		// "companyRole": user.CompanyRoleId,
 		"company": utils.ResponseFields{
 			"id":          user.CompanyID,
 			"name":        user.Company.Name,

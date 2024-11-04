@@ -60,6 +60,7 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (*
 		Email:       input.Email,
 		IsDraft:     creationMethod == "hex-invite",
 		TeamID:      input.TeamID,
+		RoleID:      input.RoleId,
 	}
 
 	if creationMethod == "hex-invite" {

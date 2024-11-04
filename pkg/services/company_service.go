@@ -11,7 +11,12 @@ type OptionalCompanyInput struct {
 	PhoneNumber string  `json:"phoneNumber"`
 }
 
+type CompanyRoleInput struct {
+	RoleName string `json:"roleName" binding:"required"`
+}
+
 type CompanyService interface {
 	UpdateCompany(input OptionalCompanyInput) (*models.Company, error)
-	GetCompanyRoles(companyId uint) ([]models.CompanyRole, error)
+	GetCompanyRoles(companyId uint) ([]models.Role, error)
+	CreateCompanyRole(companyId uint, roleName string) error
 }

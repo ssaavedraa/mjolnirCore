@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"hex/mjolnir-core/pkg/services"
 	"hex/mjolnir-core/pkg/utils"
 	"net/http"
@@ -54,7 +55,7 @@ func (cc *CompanyControllerImpl) GetCompanyRoles(c *gin.Context) {
 	companyRoles, err := cc.CompanyService.GetCompanyRoles(uint(companyId))
 
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get company roles, Please ty again later", err)
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get company roles, Please try again later", err)
 
 		return
 	}
@@ -64,9 +65,37 @@ func (cc *CompanyControllerImpl) GetCompanyRoles(c *gin.Context) {
 	for _, role := range companyRoles {
 		response = append(response, map[string]interface{}{
 			"id":   role.ID,
-			"name": role.Role.Name,
+			"name": role.Name,
 		})
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (cc *CompanyControllerImpl) CreateCompanyRole(c *gin.Context) {
+	companyIdParam := c.Param("companyId")
+
+	companyId, err := strconv.ParseUint(companyIdParam, 10, 64)
+	fmt.Printf("companyId: %d", companyId)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid company id", err)
+
+		return
+	}
+
+	var companyRoleInput services.CompanyRoleInput
+
+	if err = c.ShouldBindJSON(&companyRoleInput); err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
+
+		return
+	}
+
+	if err = cc.CompanyService.CreateCompanyRole(uint(companyId), companyRoleInput.RoleName); err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to create comapny role, Please try again later", err)
+
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{})
 }

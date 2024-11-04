@@ -9,7 +9,7 @@ type UserInput struct {
 	PhoneNumber string `json:"phoneNumber" binding:"required"`
 	Address     string `json:"address" binding:"required"`
 	CompanyId   uint   `json:"companyId" binding:"required"`
-	CompanyRole string `json:"companyRole" binding:"required"`
+	RoleId      uint   `json:"roleId" binding:"required"`
 	TeamID      uint   `json:"teamId" binding:"required"`
 }
 

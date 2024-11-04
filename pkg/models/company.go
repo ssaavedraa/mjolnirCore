@@ -11,7 +11,7 @@ type Company struct {
 	PhoneNumber string
 	IsDraft     bool `gorm:"default:true"`
 
-	Products     []Product
-	TeamMembers  []User
-	CompanyRoles []CompanyRole
+	Products    []Product
+	TeamMembers []User
+	Roles       []Role `gorm:"foreignKey:CompanyID"`
 }
