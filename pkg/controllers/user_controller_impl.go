@@ -3,7 +3,9 @@ package controllers
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
+	"hex/mjolnir-core/pkg/dtos"
 	"hex/mjolnir-core/pkg/services"
 	"hex/mjolnir-core/pkg/utils"
 
@@ -26,7 +28,7 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 	creationMethod := c.Query("method")
 
 	if creationMethod == "" {
-		var userInput services.UserInput
+		var userInput dtos.UserInput
 
 		if err := c.ShouldBindJSON(&userInput); err != nil {
 			utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
@@ -34,7 +36,7 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 			return
 		}
 
-		createdUser, err := uc.UserService.CreateUser(userInput, creationMethod)
+		_, err := uc.UserService.CreateUser(userInput, creationMethod)
 
 		if err != nil {
 			utils.RespondWithError(c, http.StatusBadRequest, "Failed to create user. Please try again later", err)
@@ -42,17 +44,11 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 			return
 		}
 
-		response := utils.ConvertToResponse(createdUser, utils.ResponseFields{
-			"id":        createdUser.ID,
-			"fullname":  createdUser.Fullname,
-			"companyId": createdUser.CompanyID,
-		})
-
-		c.JSON(http.StatusCreated, response)
+		c.JSON(http.StatusCreated, gin.H{})
 	}
 
 	if creationMethod == "hex-invite" {
-		var userInvite services.UserInvite
+		var userInvite dtos.UserInvite
 
 		if err := c.ShouldBindJSON(&userInvite); err != nil {
 			utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
@@ -73,7 +69,7 @@ func (uc *UserControllerImpl) CreateUser(c *gin.Context) {
 }
 
 func (uc *UserControllerImpl) Login(c *gin.Context) {
-	var credentials services.UserCredentials
+	var credentials dtos.UserCredentials
 
 	if err := c.ShouldBindJSON(&credentials); err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
@@ -116,28 +112,30 @@ func (uc *UserControllerImpl) GetByInviteId(c *gin.Context) {
 		return
 	}
 
-	response := utils.ConvertToResponse(user, utils.ResponseFields{
-		"id":          user.ID,
-		"email":       user.Email,
-		"fullname":    user.Fullname,
-		"phoneNumber": user.PhoneNumber,
-		"address":     user.Address,
-		// "companyRole": user.CompanyRoleId,
-		"company": utils.ResponseFields{
-			"id":          user.CompanyID,
-			"name":        user.Company.Name,
-			"domain":      user.Company.Domain,
-			"nit":         user.Company.Nit,
-			"address":     user.Company.Address,
-			"phoneNumber": user.Company.PhoneNumber,
+	userResponse := dtos.UserResponse{
+		ID:          &user.ID,
+		Fullname:    &user.Fullname,
+		Email:       &user.Email,
+		PhoneNumber: &user.PhoneNumber,
+		Address:     &user.Address,
+		Role: &dtos.RoleResponse{
+			Name: &user.Role.Name,
 		},
-	})
+		Company: &dtos.CompanyResponse{
+			ID:          &user.CompanyID,
+			Name:        &user.Company.Name,
+			Domain:      &user.Company.Domain,
+			Nit:         user.Company.Nit,
+			Address:     &user.Company.Address,
+			PhoneNumber: &user.Company.PhoneNumber,
+		},
+	}
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, userResponse)
 }
 
 func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
-	var userInput services.OptionalUserInput
+	var userInput dtos.OptionalUserInput
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request Payload", err)
@@ -154,4 +152,42 @@ func (uc *UserControllerImpl) UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent, nil)
+}
+
+func (uc *UserControllerImpl) GetUserById(c *gin.Context) {
+	var userIdParam = c.Param("userId")
+
+	userId, err := strconv.ParseUint(userIdParam, 10, 64)
+
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid url param", err)
+
+		return
+	}
+
+	user, err := uc.UserService.GetUserById(uint(userId))
+
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to get user. Please try again later", err)
+
+		return
+	}
+
+	userResponse := dtos.UserResponse{
+		Fullname:    &user.Fullname,
+		Email:       &user.Email,
+		PhoneNumber: &user.PhoneNumber,
+		Address:     &user.Address,
+		Role: &dtos.RoleResponse{
+			Name: &user.Role.Name,
+		},
+		Team: &dtos.TeamResponse{
+			Name: &user.Team.Name,
+		},
+		Company: &dtos.CompanyResponse{
+			Name: &user.Company.Name,
+		},
+	}
+
+	c.JSON(http.StatusOK, userResponse)
 }

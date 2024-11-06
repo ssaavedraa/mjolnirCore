@@ -71,7 +71,8 @@ func SetupRouter(
 		userApi.POST("", userController.CreateUser)
 		userApi.POST("/login", userController.Login)
 		userApi.GET("/invite/:inviteId", userController.GetByInviteId)
-		userApi.PUT("/:id", userController.UpdateUser)
+		userApi.PUT("/:userId", userController.UpdateUser)
+		userApi.GET("/:userId", userController.GetUserById)
 	}
 
 	companyApi := api.Group("/companies")

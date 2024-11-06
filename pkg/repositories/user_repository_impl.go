@@ -39,7 +39,7 @@ func (repo *UserRepositoryImpl) GetUserByEmail(email string) (*models.User, erro
 	return &user, nil
 }
 
-func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (*models.User, error) {
+func (repo *UserRepositoryImpl) GetUserByInviteId(inviteId string) (*models.User, error) {
 	var user = models.User{}
 
 	result := repo.db.Preload("Company").Where("invite_id = ?", inviteId).First(&user)
@@ -51,17 +51,22 @@ func (repo *UserRepositoryImpl) GetByInviteId(inviteId string) (*models.User, er
 	return &user, nil
 }
 
-func (repo *UserRepositoryImpl) GetById(id uint) (*models.User, error) {
+func (repo *UserRepositoryImpl) GetUserById(userId uint) (*models.User, error) {
 	var existingUser models.User
 
-	if err := repo.db.First(&existingUser, id).Error; err != nil {
-		return nil, fmt.Errorf("error retrieving user with ID %d, %w", id, err)
+	if err := repo.db.
+		Preload("Company").
+		Preload("Role").
+		Preload("Team").
+		First(&existingUser, userId).
+		Error; err != nil {
+		return nil, fmt.Errorf("error retrieving user with ID %d, %w", userId, err)
 	}
 
 	return &existingUser, nil
 }
 
-func (repo *UserRepositoryImpl) Update(user *models.User) (*models.User, error) {
+func (repo *UserRepositoryImpl) UpdateUser(user *models.User) (*models.User, error) {
 	var existingUser models.User
 
 	if err := repo.db.First(&existingUser, user.ID).Error; err != nil {

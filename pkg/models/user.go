@@ -4,19 +4,19 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Fullname    string
-	Email       string `gorm:"uniqueIndex"`
-	PhoneNumber string
-	Address     string
-	Password    string
-	IsDraft     bool   `gorm:"default:false"`
-	InviteId    string `gorm:"default:null"`
-	RoleID      uint
+	Fullname    string `json:"fullname"`
+	Email       string `json:"email" gorm:"uniqueIndex"`
+	PhoneNumber string `json:"phoneNumber"`
+	Address     string `json:"address"`
+	Password    string `json:"-"`
+	IsDraft     bool   `json:"-" gorm:"default:false"`
+	InviteId    string `json:"-" gorm:"default:null"`
 
-	CompanyID uint
-	TeamID    uint
-	Role      Role
-	Team      Team      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:TeamID"`
-	Company   Company   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Products  []Product `gorm:"foreignKey:CreatedBy"`
+	RoleID    uint      `json:"-"`
+	CompanyID uint      `json:"-"`
+	TeamID    uint      `json:"-"`
+	Role      Role      `json:"role"`
+	Team      Team      `json:"team" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:TeamID"`
+	Company   Company   `json:"company" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Products  []Product `json:"products,omitempty" gorm:"foreignKey:CreatedBy"`
 }

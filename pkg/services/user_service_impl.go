@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"hex/mjolnir-core/pkg/config"
+	"hex/mjolnir-core/pkg/dtos"
 	"hex/mjolnir-core/pkg/interfaces"
 	"hex/mjolnir-core/pkg/models"
 	"hex/mjolnir-core/pkg/repositories"
@@ -42,7 +43,7 @@ func NewUserService(
 	}
 }
 
-func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (*models.User, error) {
+func (us *UserServiceImpl) CreateUser(input dtos.UserInput, creationMethod string) (*models.User, error) {
 	emailTemplate := getEmailTemplateId(creationMethod)
 
 	hash, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
@@ -104,7 +105,7 @@ func (us *UserServiceImpl) CreateUser(input UserInput, creationMethod string) (*
 	return createdUser, nil
 }
 
-func (us *UserServiceImpl) Login(credentials UserCredentials) (*models.User, string, error) {
+func (us *UserServiceImpl) Login(credentials dtos.UserCredentials) (*models.User, string, error) {
 	user, err := us.UserRepository.GetUserByEmail(credentials.Email)
 
 	if err != nil {
@@ -137,14 +138,14 @@ func (us *UserServiceImpl) Login(credentials UserCredentials) (*models.User, str
 	return user, tokenString, nil
 }
 
-func (us *UserServiceImpl) InviteUser(invite UserInvite) (*models.User, error) {
+func (us *UserServiceImpl) InviteUser(invite dtos.UserInvite) (*models.User, error) {
 	company, err := us.CompanyRepository.FindOrCreateCompanyByName(invite.CompanyName)
 
 	if err != nil {
 		return nil, err
 	}
 
-	user := UserInput{
+	user := dtos.UserInput{
 		CompanyId: company.ID,
 		Email:     invite.Email,
 		Fullname:  invite.Fullname,
@@ -161,7 +162,7 @@ func (us *UserServiceImpl) InviteUser(invite UserInvite) (*models.User, error) {
 }
 
 func (us *UserServiceImpl) GetByInviteId(inviteId string) (*models.User, error) {
-	user, err := us.UserRepository.GetByInviteId(inviteId)
+	user, err := us.UserRepository.GetUserByInviteId(inviteId)
 
 	if err != nil {
 		return nil, err
@@ -170,8 +171,8 @@ func (us *UserServiceImpl) GetByInviteId(inviteId string) (*models.User, error) 
 	return user, nil
 }
 
-func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (*models.User, error) {
-	existingUser, err := us.UserRepository.GetById(input.Id)
+func (us *UserServiceImpl) UpdateUser(input dtos.OptionalUserInput) (*models.User, error) {
+	existingUser, err := us.UserRepository.GetUserById(*input.Id)
 
 	if err != nil {
 		return nil, fmt.Errorf("error retieving user: %w", err)
@@ -189,7 +190,7 @@ func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (*models.User, er
 		}
 
 		if fieldType.Name == "Password" {
-			hashedPassword, err := us.Bcrypt.GenerateFromPassword([]byte(input.Password), 10)
+			hashedPassword, err := us.Bcrypt.GenerateFromPassword([]byte(*input.Password), 10)
 
 			if err != nil {
 				return nil, fmt.Errorf("error hashing password: %w", err)
@@ -202,13 +203,23 @@ func (us *UserServiceImpl) UpdateUser(input OptionalUserInput) (*models.User, er
 		existingValue.FieldByName(fieldType.Name).Set(inputField)
 	}
 
-	updatedUser, err := us.UserRepository.Update(existingUser)
+	updatedUser, err := us.UserRepository.UpdateUser(existingUser)
 
 	if err != nil {
 		return nil, fmt.Errorf("error updating user: %w", err)
 	}
 
 	return updatedUser, nil
+}
+
+func (us *UserServiceImpl) GetUserById(userId uint) (*models.User, error) {
+	user, err := us.UserRepository.GetUserById(userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func getEmailTemplateId(creationMethod string) string {

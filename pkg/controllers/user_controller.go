@@ -7,4 +7,5 @@ type UserController interface {
 	Login(c *gin.Context)
 	GetByInviteId(c *gin.Context)
 	UpdateUser(c *gin.Context)
+	GetUserById(c *gin.Context)
 }
